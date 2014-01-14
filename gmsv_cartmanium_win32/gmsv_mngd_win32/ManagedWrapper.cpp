@@ -1,33 +1,51 @@
-#include <stdio.h>
 #include <LuaBase.h>
-#include <LuaInterface.h>
-#include <string>
-#include <Windows.h>
-
+#include "lua_shared.h"
 #using <mscorlib.dll>
 
-#define DllExport __declspec(dllexport)
-
 #define MWRAPPER
-
 #ifdef MWRAPPER
 using namespace System;
+using namespace GarrysMod;
 using namespace System::Runtime::InteropServices;
 
 namespace GarrysMod {
+	[UnmanagedFunctionPointer(CallingConvention::Cdecl)]
+	public delegate int GFunc(GarrysMod::lua_State* L);
+	
 	public ref class GLua {
 	private:
-		GarrysMod::lua_State* S;
-		
 	public:
-		//delegate int CFunc(GarrysMod::lua_State* S);
+		ref class Utils {
+		public:
+			static void print(GarrysMod::lua_State* L, System::String ^S) {
+				GLua::PushSpecial(L, GarrysMod::SPECIAL::GLOB);
+				GLua::PushString(L, "print");
+				GLua::GetTable(L, -2);
+				GLua::PushString(L, S);
+				GLua::Call(L, 1, 0);
+			}
+		};
+
+		GarrysMod::lua_State* S;
 
 		GLua(GarrysMod::lua_State* State) {
 			this->S = State;
 		}
 
+		GLua(System::IntPtr ^State) {
+			this->S = (GarrysMod::lua_State*)State->ToPointer();
+		}
+
 		GLua(void* State) {
 			this->S = (GarrysMod::lua_State*)State;
+		}
+
+		~GLua() {
+			delete S;
+		}
+
+		static void PushCFunction(GarrysMod::lua_State* L, void* F) {
+			L->luabase->PushCFunction((GarrysMod::CFunc)F);
 		}
 
 		void PushCFunction(GarrysMod::CFunc val) {
@@ -38,8 +56,36 @@ namespace GarrysMod {
 			this->PushCFunction((GarrysMod::CFunc)F);
 		}
 
-		static void PushCFunction(GarrysMod::lua_State* L, void* F) {
-			L->luabase->PushCFunction((GarrysMod::CFunc)F);
+		static void PushGFunction(GarrysMod::lua_State* L, GFunc ^F) {
+			GLua::PushCFunction(L, Marshal::GetFunctionPointerForDelegate(F).ToPointer());
+		}
+		
+		void PushGFunction(GFunc ^F) {
+			GLua::PushGFunction(this->S, F);
+		}
+
+		static void CreateGlobalTable(GarrysMod::lua_State* L, System::String ^S) {
+			GLua::PushSpecial(L, GarrysMod::SPECIAL::GLOB);
+			GLua::PushString(L, S);
+			GLua::CreateTable(L);
+			GLua::SetTable(L, -3);
+		}
+
+		void CreateGlobalTable(System::String ^S) {
+			GLua::CreateGlobalTable(this->S, S);
+		}
+
+		static void SetGlobalTableGFunc(GarrysMod::lua_State* L, System::String ^TableName, System::String ^FunctionName, GFunc ^F) {
+			GLua::PushSpecial(L, GarrysMod::SPECIAL::GLOB);
+			GLua::PushString(L, TableName);
+			GLua::GetTable(L, -2);
+			GLua::PushString(L, FunctionName);
+			GLua::PushGFunction(L, F);
+			GLua::SetTable(L, -3);
+		}
+
+		void SetGlobalTableGFunc(System::String ^TableName, System::String ^FunctionName, GFunc ^F) {
+			GLua::SetGlobalTableGFunc(this->S, TableName, FunctionName, F);
 		}
 
 		static int Top(GarrysMod::lua_State* L) {
