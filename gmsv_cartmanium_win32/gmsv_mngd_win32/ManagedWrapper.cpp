@@ -46,6 +46,13 @@ namespace GarrysMod {
 					System::Console::WriteLine(S);
 			}
 
+			static int TEST(lua_State* L) {
+				lua_getglobal(L, "func");
+				if(lua_pcall(L, 0, 0, 0)) return 1;
+				return 0;
+			}
+
+
 			static ILuaExtended* ToExtended(ILuaBase* B) {
 				return (ILuaExtended*)B;
 			}

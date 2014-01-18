@@ -31,6 +31,8 @@ namespace gmsv_cartmanium_win32 {
 				return 0;
 			});
 
+			GLua.SetGlobalTableGFunc(L, "Cart", "TEST", GLua.Utils.TEST);
+
 			GLua.Utils.print(L, "Module loaded!");
 			return 0;
 		}
