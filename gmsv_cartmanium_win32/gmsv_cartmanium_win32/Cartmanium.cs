@@ -32,6 +32,15 @@ namespace gmsv_cartmanium_win32 {
 			});
 
 			GLua.SetGlobalTableGFunc(L, "Cart", "TEST", GLua.Utils.TEST);
+			GLua.SetGlobalTableGFunc(L, "Cart", "TEST2", GLua.Utils.TEST2);
+
+			Kernel32.AllocConsole();
+			try {
+				new Cart().Register(L);
+			} catch (Exception E) {
+				Console.WriteLine(E.Message);
+			}
+
 
 			GLua.Utils.print(L, "Module loaded!");
 			return 0;
@@ -40,6 +49,13 @@ namespace gmsv_cartmanium_win32 {
 		[RGiesecke.DllExport.DllExport("gmod13_close", CallingConvention.Cdecl)]
 		public static int Close(lua_State* L) {
 			return 0;
+		}
+	}
+
+	public unsafe class Cart : LuaLibrary {
+		public int TESTEES(lua_State* L) {
+			GLua.PushString(L, "HEY! YOU! HELLO THERE!");
+			return 1;
 		}
 	}
 }

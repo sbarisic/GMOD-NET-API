@@ -1,15 +1,6 @@
-//#define GLUA
+#pragma comment(lib, "lua_shared.lib")
 
-#ifndef GLUA
-	extern "C" {
-		#include "lua.h"
-		#include "lualib.h"
-		#include "lauxlib.h"
-	}
-	#pragma comment(lib, "lua_shared.lib")
-#endif
-
-#include <LuaExtended.h>
+#include "GLua.h"
 
 #using <mscorlib.dll>
 
@@ -21,12 +12,8 @@
 
 using namespace System;
 using namespace GarrysMod::Lua;
-using namespace System::Runtime::InteropServices;
 
 namespace GarrysMod {
-	[UnmanagedFunctionPointer(CallingConvention::Cdecl)]
-	public delegate int GFunc(lua_State* L);
-	
 	public ref class GLua {
 	private:
 	public:
@@ -47,11 +34,16 @@ namespace GarrysMod {
 			}
 
 			static int TEST(lua_State* L) {
-				lua_getglobal(L, "func");
-				if(lua_pcall(L, 0, 0, 0)) return 1;
+				luaL_openlibs(L);
+
 				return 0;
 			}
 
+			static int TEST2(lua_State* L) {
+				lua_getglobal(L, "func");
+				lua_call(L, 0, 0);
+				return 0;
+			}
 
 			static ILuaExtended* ToExtended(ILuaBase* B) {
 				return (ILuaExtended*)B;
@@ -518,6 +510,40 @@ namespace GarrysMod {
 
 		double CheckNumber(int iStackPos) {
 			return GLua::CheckNumber(this->S, iStackPos);
+		}
+	};
+
+	public ref class LuaLibrary {
+	private:
+	public:
+		virtual System::String^ GetTableName() {
+			return this->GetType()->Name;
+		}
+
+		virtual void Register(lua_State *L) {
+			array<System::Reflection::MethodInfo^, 1> ^Methods = this->GetType()->GetMethods();
+			System::String ^TableName = this->GetTableName();
+			GLua::CreateGlobalTable(L, TableName);
+
+			System::Type ^GFuncType = (gcnew GFunc(EmptyGFunc))->GetType();
+
+			for each (System::Reflection::MethodInfo ^MInfo in Methods) {
+				if (MInfo->ReturnType == (1).GetType()) {
+
+					auto Params = MInfo->GetParameters();
+					if (Params->Length == 1 and Params[0]->ParameterType->FullName == "lua_State*") {
+
+						GFunc ^Func = (GFunc^)System::Delegate::CreateDelegate(GFuncType, MInfo);
+						GLua::SetGlobalTableGFunc(L, TableName, MInfo->Name, Func);
+
+					}
+
+				}
+			}
+		}
+
+		static int EmptyGFunc(lua_State* L) {
+			return 0;
 		}
 	};
 }
