@@ -1,5 +1,4 @@
 ﻿using GarrysMod;
-using RGiesecke.DllExport;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System;
@@ -11,7 +10,7 @@ namespace gmsv_cartmanium_win32 {
 	}
 
 	public unsafe class Cartmanium {
-		[DllExport("gmod13_open", CallingConvention.Cdecl)]
+		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
 		public static int Open(lua_State* L) {
 			GLua.CreateGlobalTable(L, "Cart");
 			GLua.SetGlobalTableGFunc(L, "Cart", "AllocConsole", (l) => {
@@ -32,15 +31,11 @@ namespace gmsv_cartmanium_win32 {
 				return 0;
 			});
 
-			GLua.SetGlobalTableGFunc(L, "Cart", "Test", (l) => {
-				return 0;
-			});
-
-			GLua.Utils.print(L, "C# Module loaded!");
+			GLua.Utils.print(L, "Module loaded!");
 			return 0;
 		}
 
-		[DllExport("gmod13_close", CallingConvention.Cdecl)]
+		[RGiesecke.DllExport.DllExport("gmod13_close", CallingConvention.Cdecl)]
 		public static int Close(lua_State* L) {
 			return 0;
 		}

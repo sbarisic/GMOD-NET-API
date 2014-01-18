@@ -1,62 +1,115 @@
-#include <LuaBase.h>
-#include "lua_shared.h"
+//#define GLUA
+
+#ifndef GLUA
+	extern "C" {
+		#include "lua.h"
+		#include "lualib.h"
+		#include "lauxlib.h"
+	}
+	#pragma comment(lib, "lua_shared.lib")
+#endif
+
+#include <LuaExtended.h>
+
 #using <mscorlib.dll>
+
+#define or ||
+#define PRINT(P) Console::WriteLine(P)
 
 #define MWRAPPER
 #ifdef MWRAPPER
+
 using namespace System;
-using namespace GarrysMod;
+using namespace GarrysMod::Lua;
 using namespace System::Runtime::InteropServices;
 
 namespace GarrysMod {
 	[UnmanagedFunctionPointer(CallingConvention::Cdecl)]
-	public delegate int GFunc(GarrysMod::lua_State* L);
+	public delegate int GFunc(lua_State* L);
 	
 	public ref class GLua {
 	private:
 	public:
 		ref class Utils {
 		public:
-			static void print(GarrysMod::lua_State* L, System::String ^S) {
+			static void print(lua_State* L, System::String ^S) {
 				GLua::PushSpecial(L, GarrysMod::SPECIAL::GLOB);
 				GLua::PushString(L, "print");
 				GLua::GetTable(L, -2);
 				GLua::PushString(L, S);
 				GLua::Call(L, 1, 0);
 			}
+
+			static void print(lua_State* L, System::String ^S, System::Boolean ToConsole) {
+				Utils::print(L, S);
+				if (ToConsole)
+					System::Console::WriteLine(S);
+			}
+
+			static ILuaExtended* ToExtended(ILuaBase* B) {
+				return (ILuaExtended*)B;
+			}
+
+			static ILuaExtended* ToExtended(lua_State* B) {
+				return (ILuaExtended*)B->luabase;
+			}
 		};
 
-		GarrysMod::lua_State* S;
+		lua_State* S;
 
-		GLua(GarrysMod::lua_State* State) {
+		GLua(lua_State* State) {
 			this->S = State;
 		}
 
 		GLua(System::IntPtr ^State) {
-			this->S = (GarrysMod::lua_State*)State->ToPointer();
+			this->S = (lua_State*)State->ToPointer();
 		}
 
 		GLua(void* State) {
-			this->S = (GarrysMod::lua_State*)State;
+			this->S = (lua_State*)State;
 		}
 
 		~GLua() {
 			delete S;
 		}
 
-		static void PushCFunction(GarrysMod::lua_State* L, void* F) {
-			L->luabase->PushCFunction((GarrysMod::CFunc)F);
+		static bool IsClient(lua_State* L) {
+			return Utils::ToExtended(L)->IsClient();
 		}
 
-		void PushCFunction(GarrysMod::CFunc val) {
+		bool IsClient() {
+			return GLua::IsClient(this->S);
+		}
+
+		static bool IsServer(lua_State* L) {
+			return Utils::ToExtended(L)->IsServer();
+		}
+
+		bool IsServer() {
+			return GLua::IsServer(this->S);
+		}
+
+		static void Shutdown(lua_State* L) {
+			Utils::ToExtended(L)->Shutdown();
+		}
+
+		void Shutdown() {
+			GLua::Shutdown(this->S);
+		}
+
+		static void PushCFunction(lua_State* L, void* F) {
+			L->luabase->PushCFunction((CFunc)F);
+		}
+
+		void PushCFunction(CFunc val) {
 			GLua::PushCFunction(this->S, val);
 		}
 
 		void PushCFunction(void* F) {
-			this->PushCFunction((GarrysMod::CFunc)F);
+			this->PushCFunction((CFunc)F);
 		}
 
-		static void PushGFunction(GarrysMod::lua_State* L, GFunc ^F) {
+		static void PushGFunction(lua_State* L, GFunc ^F) {
 			GLua::PushCFunction(L, Marshal::GetFunctionPointerForDelegate(F).ToPointer());
 		}
 		
@@ -64,7 +117,7 @@ namespace GarrysMod {
 			GLua::PushGFunction(this->S, F);
 		}
 
-		static void CreateGlobalTable(GarrysMod::lua_State* L, System::String ^S) {
+		static void CreateGlobalTable(lua_State* L, System::String ^S) {
 			GLua::PushSpecial(L, GarrysMod::SPECIAL::GLOB);
 			GLua::PushString(L, S);
 			GLua::CreateTable(L);
@@ -75,7 +128,7 @@ namespace GarrysMod {
 			GLua::CreateGlobalTable(this->S, S);
 		}
 
-		static void SetGlobalTableGFunc(GarrysMod::lua_State* L, System::String ^TableName, System::String ^FunctionName, GFunc ^F) {
+		static void SetGlobalTableGFunc(lua_State* L, System::String ^TableName, System::String ^FunctionName, GFunc ^F) {
 			GLua::PushSpecial(L, GarrysMod::SPECIAL::GLOB);
 			GLua::PushString(L, TableName);
 			GLua::GetTable(L, -2);
@@ -88,7 +141,7 @@ namespace GarrysMod {
 			GLua::SetGlobalTableGFunc(this->S, TableName, FunctionName, F);
 		}
 
-		static int Top(GarrysMod::lua_State* L) {
+		static int Top(lua_State* L) {
 			return L->luabase->Top();
 		}
 
@@ -96,7 +149,7 @@ namespace GarrysMod {
 			return GLua::Top(this->S);
 		}
 
-		static void Push(GarrysMod::lua_State* L, int StackPos) {
+		static void Push(lua_State* L, int StackPos) {
 			L->luabase->Push(StackPos);
 		}
 
@@ -104,7 +157,7 @@ namespace GarrysMod {
 			GLua::Push(this->S, StackPos);
 		}
 		
-		static void Pop(GarrysMod::lua_State* L, int Amount) {
+		static void Pop(lua_State* L, int Amount) {
 			L->luabase->Pop(Amount);
 		}
 
@@ -112,7 +165,7 @@ namespace GarrysMod {
 			GLua::Pop(this->S, Amount);
 		}
 
-		static void GetTable(GarrysMod::lua_State* L, int StackPos) {
+		static void GetTable(lua_State* L, int StackPos) {
 			L->luabase->GetTable(StackPos);
 		}
 
@@ -120,7 +173,7 @@ namespace GarrysMod {
 			GLua::GetTable(this->S, StackPos);
 		}
 
-		static void GetField(GarrysMod::lua_State* L, int iStackPos, System::String ^strName) {
+		static void GetField(lua_State* L, int iStackPos, System::String ^strName) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(strName);
 			L->luabase->GetField(iStackPos, str);
 			Marshal::FreeHGlobal(System::IntPtr((void*)str));
@@ -130,7 +183,7 @@ namespace GarrysMod {
 			GLua::GetField(this->S, iStackPos, strName);
 		}
 
-		static void SetField(GarrysMod::lua_State* L, int iStackPos, System::String ^strName) {
+		static void SetField(lua_State* L, int iStackPos, System::String ^strName) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(strName);
 			L->luabase->SetField(iStackPos, str);
 			Marshal::FreeHGlobal(System::IntPtr((void*)str));
@@ -140,7 +193,7 @@ namespace GarrysMod {
 			GLua::SetField(this->S, iStackPos, strName);
 		}
 
-		static void CreateTable(GarrysMod::lua_State* L) {
+		static void CreateTable(lua_State* L) {
 			L->luabase->CreateTable();
 		}
 
@@ -148,7 +201,7 @@ namespace GarrysMod {
 			GLua::CreateTable(this->S);
 		}
 
-		static void SetTable(GarrysMod::lua_State* L, int i) {
+		static void SetTable(lua_State* L, int i) {
 			L->luabase->SetTable(i);
 		}
 
@@ -156,7 +209,7 @@ namespace GarrysMod {
 			GLua::SetTable(this->S, i);
 		}
 
-		static void SetMetaTable(GarrysMod::lua_State* L, int i) {
+		static void SetMetaTable(lua_State* L, int i) {
 			L->luabase->SetMetaTable(i);
 		}
 
@@ -164,7 +217,7 @@ namespace GarrysMod {
 			GLua::SetMetaTable(this->S, i);
 		}
 
-		static bool GetMetaTable(GarrysMod::lua_State* L, int i) {
+		static bool GetMetaTable(lua_State* L, int i) {
 			return L->luabase->GetMetaTable(i);
 		}
 
@@ -172,7 +225,7 @@ namespace GarrysMod {
 			return GLua::GetMetaTable(this->S, i);
 		}
 
-		static void Call(GarrysMod::lua_State* L, int iArgs, int iResults) {
+		static void Call(lua_State* L, int iArgs, int iResults) {
 			L->luabase->Call(iArgs, iResults);
 		}
 
@@ -180,7 +233,7 @@ namespace GarrysMod {
 			GLua::Call(this->S, iArgs, iResults);
 		}
 
-		static int PCall(GarrysMod::lua_State* L, int iArgs, int iResults, int iErrorFunc) {
+		static int PCall(lua_State* L, int iArgs, int iResults, int iErrorFunc) {
 			return L->luabase->PCall(iArgs, iResults, iErrorFunc);
 		}
 
@@ -188,7 +241,7 @@ namespace GarrysMod {
 			return GLua::PCall(this->S, iArgs, iResults, iErrorFunc);
 		}
 
-		static int Equal(GarrysMod::lua_State* L, int iA, int iB) {
+		static int Equal(lua_State* L, int iA, int iB) {
 			return L->luabase->Equal(iA, iB);
 		}
 
@@ -196,7 +249,7 @@ namespace GarrysMod {
 			return GLua::Equal(this->S, iA, iB);
 		}
 
-		static int RawEqual(GarrysMod::lua_State* L, int iA, int iB) {
+		static int RawEqual(lua_State* L, int iA, int iB) {
 			return L->luabase->RawEqual(iA, iB);
 		}
 
@@ -204,7 +257,7 @@ namespace GarrysMod {
 			return GLua::RawEqual(this->S, iA, iB);
 		}
 
-		static void Insert(GarrysMod::lua_State* L, int iStackPos) {
+		static void Insert(lua_State* L, int iStackPos) {
 			L->luabase->Insert(iStackPos);
 		}
 
@@ -212,7 +265,7 @@ namespace GarrysMod {
 			GLua::Insert(this->S, iStackPos);
 		}
 
-		static void Remove(GarrysMod::lua_State* L, int iStackPos) {
+		static void Remove(lua_State* L, int iStackPos) {
 			L->luabase->Remove(iStackPos);
 		}
 
@@ -220,7 +273,7 @@ namespace GarrysMod {
 			GLua::Remove(this->S, iStackPos);
 		}
 
-		static int Next(GarrysMod::lua_State* L, int iStackPos) {
+		static int Next(lua_State* L, int iStackPos) {
 			return L->luabase->Next(iStackPos);
 		}
 
@@ -228,7 +281,7 @@ namespace GarrysMod {
 			return GLua::Next(this->S, iStackPos);
 		}
 
-		static void* NewUserdata(GarrysMod::lua_State* L, unsigned int iSize) {
+		static void* NewUserdata(lua_State* L, unsigned int iSize) {
 			return L->luabase->NewUserdata(iSize);
 		}
 
@@ -236,7 +289,7 @@ namespace GarrysMod {
 			return GLua::NewUserdata(this->S, iSize);
 		}
 
-		static void ThrowError(GarrysMod::lua_State* L, System::String ^strError) {
+		static void ThrowError(lua_State* L, System::String ^strError) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(strError);
 			L->luabase->ThrowError(str);
 			Marshal::FreeHGlobal(System::IntPtr((void*)str));
@@ -246,7 +299,7 @@ namespace GarrysMod {
 			GLua::ThrowError(this->S, strError);
 		}
 
-		static void CheckType(GarrysMod::lua_State* L, int iStackPos, int iType) {
+		static void CheckType(lua_State* L, int iStackPos, int iType) {
 			L->luabase->CheckType(iStackPos, iType);
 		}
 
@@ -254,7 +307,7 @@ namespace GarrysMod {
 			GLua::CheckType(this->S, iStackPos, iType);
 		}
 
-		static void ArgError(GarrysMod::lua_State* L, int iArgNum, System::String ^strMessage) {
+		static void ArgError(lua_State* L, int iArgNum, System::String ^strMessage) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(strMessage);
 			L->luabase->ArgError(iArgNum, str);
 			Marshal::FreeHGlobal(System::IntPtr((void*)str));
@@ -264,7 +317,7 @@ namespace GarrysMod {
 			GLua::ArgError(this->S, iArgNum, strMessage);
 		}
 
-		static void RawGet(GarrysMod::lua_State* L, int iStackPos) {
+		static void RawGet(lua_State* L, int iStackPos) {
 			L->luabase->RawGet(iStackPos);
 		}
 
@@ -272,7 +325,7 @@ namespace GarrysMod {
 			GLua::RawGet(this->S, iStackPos);
 		}
 
-		static void RawSet(GarrysMod::lua_State* L, int iStackPos) {
+		static void RawSet(lua_State* L, int iStackPos) {
 			L->luabase->RawSet(iStackPos);
 		}
 
@@ -280,7 +333,7 @@ namespace GarrysMod {
 			GLua::RawSet(this->S, iStackPos);
 		}
 
-		static System::String^ GetString(GarrysMod::lua_State* L, int iStackPos, unsigned int* iOutLen) {
+		static System::String^ GetString(lua_State* L, int iStackPos, unsigned int* iOutLen) {
 			return gcnew System::String(L->luabase->GetString(iStackPos, iOutLen));
 		}
 
@@ -288,7 +341,7 @@ namespace GarrysMod {
 			return GLua::GetString(this->S, iStackPos, iOutLen);
 		}
 
-		static double GetNumber(GarrysMod::lua_State* L, int iStackPos) {
+		static double GetNumber(lua_State* L, int iStackPos) {
 			return L->luabase->GetNumber(iStackPos);
 		}
 
@@ -296,7 +349,7 @@ namespace GarrysMod {
 			return GLua::GetNumber(this->S, iStackPos);
 		}
 
-		static bool GetBool(GarrysMod::lua_State* L, int iStackPos) {
+		static bool GetBool(lua_State* L, int iStackPos) {
 			return L->luabase->GetBool(iStackPos);
 		}
 
@@ -304,7 +357,7 @@ namespace GarrysMod {
 			return GLua::GetBool(this->S, iStackPos);
 		}
 
-		static void* GetCFunction(GarrysMod::lua_State* L, int iStackPos) {
+		static void* GetCFunction(lua_State* L, int iStackPos) {
 			return L->luabase->GetCFunction(iStackPos);
 		}
 
@@ -312,7 +365,7 @@ namespace GarrysMod {
 			return GLua::GetCFunction(this->S, iStackPos);
 		}
 
-		static void* GetUserdata(GarrysMod::lua_State* L, int iStackPos) {
+		static void* GetUserdata(lua_State* L, int iStackPos) {
 			return L->luabase->GetUserdata(iStackPos);
 		}
 
@@ -320,7 +373,7 @@ namespace GarrysMod {
 			return GLua::GetUserdata(this->S, iStackPos);
 		}
 
-		static void PushNil(GarrysMod::lua_State* L) {
+		static void PushNil(lua_State* L) {
 			L->luabase->PushNil();
 		}
 
@@ -328,13 +381,13 @@ namespace GarrysMod {
 			GLua::PushNil(this->S);
 		}
 
-		static void PushString(GarrysMod::lua_State* L, System::String ^val, unsigned int iLen) {
+		static void PushString(lua_State* L, System::String ^val, unsigned int iLen) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(val);
 			L->luabase->PushString(str, iLen);
 			Marshal::FreeHGlobal(System::IntPtr((void*)str));
 		}
 
-		static void PushString(GarrysMod::lua_State* L, System::String ^val) {
+		static void PushString(lua_State* L, System::String ^val) {
 			GLua::PushString(L, val, 0);
 		}
 
@@ -346,7 +399,7 @@ namespace GarrysMod {
 			GLua::PushString(this->S, str);
 		}
 		
-		static void PushNumber(GarrysMod::lua_State* L, double val) {
+		static void PushNumber(lua_State* L, double val) {
 			L->luabase->PushNumber(val);
 		}
 
@@ -354,7 +407,7 @@ namespace GarrysMod {
 			GLua::PushNumber(this->S, N);
 		}
 
-		static void PushBool(GarrysMod::lua_State* L, bool val) {
+		static void PushBool(lua_State* L, bool val) {
 			L->luabase->PushBool(val);
 		}
 
@@ -362,15 +415,15 @@ namespace GarrysMod {
 			GLua::PushBool(this->S, B);
 		}
 
-		static void PushCClosure(GarrysMod::lua_State* L, void* val, int iVars) {
-			L->luabase->PushCClosure((GarrysMod::CFunc)val, iVars);
+		static void PushCClosure(lua_State* L, void* val, int iVars) {
+			L->luabase->PushCClosure((CFunc)val, iVars);
 		}
 
 		void PushCClosure(void* val, int iVars) {
 			GLua::PushCClosure(this->S, val, iVars);
 		}
 
-		static void PushUserdata(GarrysMod::lua_State* L, void* UData) {
+		static void PushUserdata(lua_State* L, void* UData) {
 			L->luabase->PushUserdata(UData);
 		}
 
@@ -378,7 +431,7 @@ namespace GarrysMod {
 			GLua::PushUserdata(this->S, UData);
 		}
 
-		static int ReferenceCreate(GarrysMod::lua_State* L) {
+		static int ReferenceCreate(lua_State* L) {
 			return L->luabase->ReferenceCreate();
 		}
 
@@ -386,7 +439,7 @@ namespace GarrysMod {
 			return GLua::ReferenceCreate(this->S);
 		}
 
-		static void ReferenceFree(GarrysMod::lua_State* L, int i) {
+		static void ReferenceFree(lua_State* L, int i) {
 			L->luabase->ReferenceFree(i);
 		}
 
@@ -394,7 +447,7 @@ namespace GarrysMod {
 			GLua::ReferenceFree(this->S, i);
 		}
 
-		static void ReferencePush(GarrysMod::lua_State* L, int i) {
+		static void ReferencePush(lua_State* L, int i) {
 			L->luabase->ReferencePush(i);
 		}
 
@@ -402,7 +455,7 @@ namespace GarrysMod {
 			GLua::ReferencePush(this->S, i);
 		}
 
-		static void PushSpecial(GarrysMod::lua_State* L, GarrysMod::SPECIAL iType) {
+		static void PushSpecial(lua_State* L, GarrysMod::SPECIAL iType) {
 			L->luabase->PushSpecial((int)iType);
 		}
 
@@ -410,7 +463,7 @@ namespace GarrysMod {
 			GLua::PushSpecial(this->S, Spec);
 		}
 
-		static bool IsType(GarrysMod::lua_State* L, int iStackPos, int iType) {
+		static bool IsType(lua_State* L, int iStackPos, int iType) {
 			return L->luabase->IsType(iStackPos, iType);
 		}
 
@@ -418,7 +471,7 @@ namespace GarrysMod {
 			return GLua::IsType(this->S, iStackPos, iType);
 		}
 
-		static int GetType(GarrysMod::lua_State* L, int iStackPos) {
+		static int GetType(lua_State* L, int iStackPos) {
 			return L->luabase->GetType(iStackPos);
 		}
 
@@ -426,7 +479,7 @@ namespace GarrysMod {
 			return GLua::GetType(this->S, iStackPos);
 		}
 
-		static System::String ^GetTypeName(GarrysMod::lua_State* L, int iType) {
+		static System::String ^GetTypeName(lua_State* L, int iType) {
 			return gcnew System::String(L->luabase->GetTypeName(iType));
 		}
 
@@ -434,7 +487,7 @@ namespace GarrysMod {
 			return GLua::GetTypeName(this->S, iType);
 		}
 
-		static void CreateMetaTableType(GarrysMod::lua_State* L, System::String ^strName, int iType) {
+		static void CreateMetaTableType(lua_State* L, System::String ^strName, int iType) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(strName);
 			L->luabase->CreateMetaTableType(str, iType);
 			Marshal::FreeHGlobal(System::IntPtr((void*)str));
@@ -444,7 +497,7 @@ namespace GarrysMod {
 			GLua::CreateMetaTableType(this->S, strName, iType);
 		}
 
-		static System::String ^CheckString(GarrysMod::lua_State* L, int iStackPos) {
+		static System::String ^CheckString(lua_State* L, int iStackPos) {
 			return gcnew System::String(L->luabase->CheckString(iStackPos));
 		}
 
@@ -452,7 +505,7 @@ namespace GarrysMod {
 			return GLua::CheckString(this->S, iStackPos);
 		}
 
-		static double CheckNumber(GarrysMod::lua_State* L, int iStackPos) {
+		static double CheckNumber(lua_State* L, int iStackPos) {
 			return L->luabase->CheckNumber(iStackPos);
 		}
 

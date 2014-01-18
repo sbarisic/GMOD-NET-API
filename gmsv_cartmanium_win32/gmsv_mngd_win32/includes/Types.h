@@ -1,94 +1,104 @@
 #ifndef GARRYSMOD_LUA_TYPES_H
 #define GARRYSMOD_LUA_TYPES_H
 
-namespace GarrysMod {
-	public enum class TYPE : int {
-		INVALID = -1,
-		NIL, 
-		BOOL,
-		LIGHTUSERDATA,
-		NUMBER, 
-		STRING, 
-		TABLE,
-		FUNCTION,
-		USERDATA,
-		THREAD,
+#ifdef ENTITY
+#undef ENTITY
+#endif 
 
-		// UserData
-		ENTITY, 
-		VECTOR, 
-		ANGLE,
-		PHYSOBJ,
-		SAVE,
-		RESTORE,
-		DAMAGEINFO,
-		EFFECTDATA,
-		MOVEDATA,
-		RECIPIENTFILTER,
-		USERCMD,
-		SCRIPTEDVEHICLE,
+#ifdef VECTOR
+#undef VECTOR
+#endif 
 
-		// Client Only
-		MATERIAL,
-		PANEL,
-		PARTICLE,
-		PARTICLEEMITTER,
-		TEXTURE,
-		USERMSG,
+namespace GarrysMod  {
+	namespace Lua {
+		namespace Type {
+			enum {
 
-		CONVAR,
-		IMESH,
-		MATRIX,
-		SOUND,
-		PIXELVISHANDLE,
-		DLIGHT,
-		VIDEO,
-		FILE,
+				INVALID = -1,
+				NIL, 
+				BOOL,
+				LIGHTUSERDATA,
+				NUMBER, 
+				STRING, 
+				TABLE,
+				FUNCTION,
+				USERDATA,
+				THREAD,
 
-		COUNT
-	};
+				// UserData
+				ENTITY, 
+				VECTOR, 
+				ANGLE,
+				PHYSOBJ,
+				SAVE,
+				RESTORE,
+				DAMAGEINFO,
+				EFFECTDATA,
+				MOVEDATA,
+				RECIPIENTFILTER,
+				USERCMD,
+				SCRIPTEDVEHICLE,
 
+				// Client Only
+				MATERIAL,
+				PANEL,
+				PARTICLE,
+				PARTICLEEMITTER,
+				TEXTURE,
+				USERMSG,
 
-	// TODO: Make it managed
-	static const char* Name[] = 
-	{
-		"nil",
-		"bool",
-		"lightuserdata",
-		"number",
-		"string",
-		"table",
-		"function",
-		"userdata",
-		"thread",
-		"entity",
-		"vector",
-		"angle",
-		"physobj",
-		"save",
-		"restore",
-		"damageinfo",
-		"effectdata",
-		"movedata",
-		"recipientfilter",
-		"usercmd",
-		"vehicle",
-		"material",
-		"panel",
-		"particle",
-		"particleemitter",
-		"texture",
-		"usermsg",
-		"convar",
-		"mesh",
-		"matrix",
-		"sound",
-		"pixelvishandle",
-		"dlight",
-		"video",
-		"file",
-		0
-	};
+				CONVAR,
+				IMESH,
+				MATRIX,
+				SOUND,
+				PIXELVISHANDLE,
+				DLIGHT,
+				VIDEO,
+				FILE,
+
+				COUNT
+			};
+
+			static const char* Name[] =  {
+				"nil",
+				"bool",
+				"lightuserdata",
+				"number",
+				"string",
+				"table",
+				"function",
+				"userdata",
+				"thread",
+				"entity",
+				"vector",
+				"angle",
+				"physobj",
+				"save",
+				"restore",
+				"damageinfo",
+				"effectdata",
+				"movedata",
+				"recipientfilter",
+				"usercmd",
+				"vehicle",
+				"material",
+				"panel",
+				"particle",
+				"particleemitter",
+				"texture",
+				"usermsg",
+				"convar",
+				"mesh",
+				"matrix",
+				"sound",
+				"pixelvishandle",
+				"dlight",
+				"video",
+				"file",
+				0
+			};
+		}
+	}
 }
 
-#endif 
+#endif
