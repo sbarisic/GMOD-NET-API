@@ -15,5 +15,8 @@
     <ClInclude Include="GLua.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Wrappers.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
