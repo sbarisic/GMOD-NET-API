@@ -1,6 +1,5 @@
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
-[Bb]in/
-[Oo]bj/
+bin/
 
 # mstest test results
 TestResults
@@ -17,6 +16,7 @@ TestResults
 [Dd]ebug/
 [Rr]elease/
 x64/
+bin/
 *_i.c
 *_p.c
 *.ilk
