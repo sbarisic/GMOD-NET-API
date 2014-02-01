@@ -11,12 +11,13 @@ namespace gmsv_cartmanium_win32 {
 	}
 
 	public unsafe class Cartmanium {
-		static List<GFunc> CartLib;
-
 		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
 		public static int Open(lua_State* L) {
-			CartLib = GLua.CreateClassLib(L, typeof(Cart));
-			GLua.Utils.print(L, "Module loaded!");
+			Kernel32.AllocConsole();
+
+			GLua.Keepalive.AddList("Cart", GLua.CreateClassLib(L, typeof(Cart)));
+
+			GLua.Utils.print(L, "Module v{0} loaded!", ManagedWrapper.VERSION);
 			return 0;
 		}
 
@@ -29,7 +30,7 @@ namespace gmsv_cartmanium_win32 {
 	public unsafe static class Cart {
 		static int Calls = 0;
 
-		public static int Console(lua_State *L) {
+		public static int Console(lua_State* L) {
 			int ArgCount = GLua.Top(L);
 			for (int i = 0; i < ArgCount; i++) {
 				var S = GLua.GetString(L, i + 1, (uint*)0);
@@ -49,6 +50,7 @@ namespace gmsv_cartmanium_win32 {
 
 		public static int ReadLine(lua_State* L) {
 			GLua.PushString(L, System.Console.ReadLine());
+			
 			return 1;
 		}
 

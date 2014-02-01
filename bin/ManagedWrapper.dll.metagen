@@ -18,6 +18,14 @@ Class GarrysMod.GFunc: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeField
     Invoke(lua_State*): PrivateScope, Public, Final, Virtual, VtableLayoutMask
     BeginInvoke(lua_State*, AsyncCallback, Object): PrivateScope, Public, Final, Virtual, VtableLayoutMask
     EndInvoke(IAsyncResult): PrivateScope, Public, Final, Virtual, VtableLayoutMask
+Class GarrysMod.ManagedWrapper: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Fields:
+    System.String VERSION : Public, Static, InitOnly
+    Int32 MAJOR : Public, Static, InitOnly
+    Int32 MINOR : Public, Static, InitOnly
+    Int32 REVISION : Public, Static, InitOnly
+    Int32 BUILD : Public, Static, InitOnly
 Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Methods:
@@ -47,6 +55,8 @@ Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     glua_gethookcount(lua_State*): PrivateScope, Public, Static, HideBySig
     IsClient(lua_State*): PrivateScope, Public, Static, HideBySig
     IsServer(lua_State*): PrivateScope, Public, Static, HideBySig
+    IsMenu(lua_State*): PrivateScope, Public, Static, HideBySig
+    Openlibs(lua_State*): PrivateScope, Public, Static, HideBySig
     Shutdown(lua_State*): PrivateScope, Public, Static, HideBySig
     PushCFunction(lua_State*, Void*): PrivateScope, Public, Static, HideBySig
     PushGFunction(lua_State*, GFunc): PrivateScope, Public, Static, HideBySig
@@ -185,11 +195,61 @@ Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     glua_setmetatable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
 Class GarrysMod.GLua+Utils: AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Fields:
+    Boolean PrintToConsole : Public, Static
   Methods:
+    print(lua_State*, String, Object[]): PrivateScope, Public, Static, HideBySig
     print(lua_State*, String, Boolean(HasFieldMarshal)): PrivateScope, Public, Static, HideBySig
     print(lua_State*, String): PrivateScope, Public, Static, HideBySig
     ToExtended(lua_State*): PrivateScope, Public, Static, HideBySig
     ToExtended(ILuaBase*): PrivateScope, Public, Static, HideBySig
+Class GarrysMod.GLua+Keepalive: AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Methods:
+    Remove(String): PrivateScope, Public, Static, HideBySig
+    AddList(String, List`1): PrivateScope, Public, Static, HideBySig
+    AddObject(String, Object): PrivateScope, Public, Static, HideBySig
+Struct GarrysMod.Lua.Type: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+  :System.Enum
+  Fields:
+    Int32 value__ : Public, SpecialName, RTSpecialName
+    GarrysMod.Lua.Type INVALID = -1 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type NIL = 0 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type BOOL = 1 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type LIGHTUSERDATA = 2 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type NUMBER = 3 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type STRING = 4 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type TABLE = 5 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type FUNCTION = 6 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type USERDATA = 7 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type THREAD = 8 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type ENTITY = 9 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type VECTOR = 10 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type ANGLE = 11 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type PHYSOBJ = 12 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type SAVE = 13 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type RESTORE = 14 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type DAMAGEINFO = 15 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type EFFECTDATA = 16 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type MOVEDATA = 17 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type RECIPIENTFILTER = 18 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type USERCMD = 19 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type SCRIPTEDVEHICLE = 20 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type MATERIAL = 21 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type PANEL = 22 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type PARTICLE = 23 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type PARTICLEEMITTER = 24 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type TEXTURE = 25 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type USERMSG = 26 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type CONVAR = 27 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type IMESH = 28 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type MATRIX = 29 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type SOUND = 30 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type PIXELVISHANDLE = 31 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type DLIGHT = 32 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type VIDEO = 33 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type FILE = 34 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Type COUNT = 35 : Public, Static, Literal, HasDefault
 Struct GarrysMod.SPECIAL: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
   :System.Enum
   Fields:
@@ -197,3 +257,10 @@ Struct GarrysMod.SPECIAL: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFi
     GarrysMod.SPECIAL GLOB = 0 : Public, Static, Literal, HasDefault
     GarrysMod.SPECIAL ENV = 1 : Public, Static, Literal, HasDefault
     GarrysMod.SPECIAL REG = 2 : Public, Static, Literal, HasDefault
+Struct GarrysMod.Lua.Index: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+  :System.Enum
+  Fields:
+    Int32 value__ : Public, SpecialName, RTSpecialName
+    GarrysMod.Lua.Index REGISTRY = -10000 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Index ENVIRONMENT = -10001 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Index GLOBAL = -10002 : Public, Static, Literal, HasDefault

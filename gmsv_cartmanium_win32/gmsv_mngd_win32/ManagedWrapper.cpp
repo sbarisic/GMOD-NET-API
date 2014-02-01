@@ -12,6 +12,7 @@
 
 using namespace System;
 using namespace GarrysMod::Lua;
+using namespace System::Collections::Generic;
 
 namespace GarrysMod {
 	public ref class GLua {
@@ -19,18 +20,26 @@ namespace GarrysMod {
 	public:
 		ref class Utils {
 		public:
+			static bool PrintToConsole = true;
+
 			static void print(lua_State* L, System::String ^S) {
 				GLua::PushSpecial(L, GarrysMod::SPECIAL::GLOB);
 				GLua::PushString(L, "print");
 				GLua::GetTable(L, -2);
 				GLua::PushString(L, S);
 				GLua::Call(L, 1, 0);
+				if (Utils::PrintToConsole)
+					System::Console::WriteLine(S);
 			}
 
 			static void print(lua_State* L, System::String ^S, System::Boolean ToConsole) {
+				auto oPTC = Utils::PrintToConsole; Utils::PrintToConsole = ToConsole;
 				Utils::print(L, S);
-				if (ToConsole)
-					System::Console::WriteLine(S);
+				Utils::PrintToConsole = oPTC;
+			}
+
+			static void print(lua_State* L, System::String ^S, ... array<Object^>^ VArgs) {
+				Utils::print(L, System::String::Format(S, VArgs));
 			}
 
 			static ILuaExtended* ToExtended(ILuaBase* B) {
@@ -42,8 +51,34 @@ namespace GarrysMod {
 			}
 		};
 
-		static System::Collections::Generic::List<GFunc^> ^CreateClassLib(lua_State *L, System::Type ^Lib) {
-			auto RetL = gcnew System::Collections::Generic::List<GFunc^>();
+		ref class Keepalive {
+		private:
+			static Dictionary<System::String^, System::Object^> ^KADict = gcnew Dictionary<System::String^, System::Object^>();
+
+			static void CheckName(System::String^ Name) {
+				if (Keepalive::KADict->ContainsKey(Name))
+					throw gcnew System::Exception(System::String::Format("Keepalive {0} exists!", Name));
+			}
+		public:
+			static void Remove(System::String^ Name) {
+				if (!Keepalive::KADict->ContainsKey(Name))
+					throw gcnew System::Exception(System::String::Format("Keepalive {0} does not exist!", Name));
+				Keepalive::KADict->Remove(Name);
+			}
+
+			static void AddList(System::String^ Name, List<GFunc^>^ GFuncList) {
+				Keepalive::CheckName(Name);
+				Keepalive::KADict->Add(Name, GFuncList);
+			}
+
+			static void AddObject(System::String^ Name, System::Object^ Obj) {
+				Keepalive::CheckName(Name);
+				Keepalive::KADict->Add(Name, Obj);
+			}
+		};
+
+		static List<GFunc^> ^CreateClassLib(lua_State *L, System::Type ^Lib) {
+			auto RetL = gcnew List<GFunc^>();
 
 			auto Methods = Lib->GetMethods();
 			System::String ^TableName = Lib->Name;
@@ -71,6 +106,23 @@ namespace GarrysMod {
 
 		static bool IsServer(lua_State* L) {
 			return Utils::ToExtended(L)->IsServer();
+		}
+
+		static bool IsMenu(lua_State* L) {
+			ILuaExtended* Le = (ILuaExtended*)L;
+			lua_getfield(L, LUA_GLOBALSINDEX, "render");
+			bool Render = lua_type(L, -1) == (int)Lua::Type::NIL;
+			lua_getfield(L, LUA_GLOBALSINDEX, "chat");
+			bool Chat = lua_type(L, -1) == (int)Lua::Type::NIL;
+			lua_getfield(L, LUA_GLOBALSINDEX, "cam");
+			bool Cam = lua_type(L, -1) == (int)Lua::Type::NIL;
+			if ((GLua::IsClient(L) || GLua::IsServer(L)) && (Render || Chat || Cam))
+				return true;
+			return false;
+		}
+
+		static void Openlibs(lua_State* L) {
+			luaL_openlibs(L);
 		}
 
 		static void Shutdown(lua_State* L) {

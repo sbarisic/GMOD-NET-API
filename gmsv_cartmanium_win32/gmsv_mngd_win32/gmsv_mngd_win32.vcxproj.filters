@@ -18,5 +18,9 @@
     <ClInclude Include="Wrappers.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Res.rc" />
   </ItemGroup>
 </Project>

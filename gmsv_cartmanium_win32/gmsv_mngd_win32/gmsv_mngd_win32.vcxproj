@@ -91,7 +91,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLua.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Wrappers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Res.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
