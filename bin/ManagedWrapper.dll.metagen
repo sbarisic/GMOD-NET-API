@@ -1,0 +1,199 @@
+ImageRuntimeVersion: v4.0.30319
+Assembly ManagedWrapper, Version=0.0.*, Culture=Invariant Language (Invariant Country): 
+	hash=SHA1, flags=PublicKey
+Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Struct GarrysMod.Lua.ILuaBase: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
+  :System.ValueType
+Struct lua_State: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, BeforeFieldInit
+  :System.ValueType
+Struct GarrysMod.Lua.ILuaCallback: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
+  :System.ValueType
+Struct GarrysMod.Lua.ILuaExtended: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
+  :System.ValueType
+Class GarrysMod.GFunc: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+  :System.MulticastDelegate
+    Void .ctor(System.Object, IntPtr): PrivateScope, Public, SpecialName, RTSpecialName
+  Methods:
+    Invoke(lua_State*): PrivateScope, Public, Final, Virtual, VtableLayoutMask
+    BeginInvoke(lua_State*, AsyncCallback, Object): PrivateScope, Public, Final, Virtual, VtableLayoutMask
+    EndInvoke(IAsyncResult): PrivateScope, Public, Final, Virtual, VtableLayoutMask
+Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Methods:
+    glua_setfenv(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_call(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_pcall(lua_State*, Int32, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_cpcall(lua_State*, IntPtr, Void*): PrivateScope, Public, Static, HideBySig
+    glua_load(lua_State*, IntPtr, Void*, String): PrivateScope, Public, Static, HideBySig
+    glua_dump(lua_State*, IntPtr, Void*): PrivateScope, Public, Static, HideBySig
+    glua_yield(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_status(lua_State*): PrivateScope, Public, Static, HideBySig
+    glua_gc(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_error(lua_State*): PrivateScope, Public, Static, HideBySig
+    glua_next(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_concat(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_getallocf(lua_State*, Void**): PrivateScope, Public, Static, HideBySig
+    glua_setallocf(lua_State*, IntPtr, Void*): PrivateScope, Public, Static, HideBySig
+    glua_getstack(lua_State*, Int32, lua_Debug*): PrivateScope, Public, Static, HideBySig
+    glua_getinfo(lua_State*, String, lua_Debug*): PrivateScope, Public, Static, HideBySig
+    glua_getlocal(lua_State*, lua_Debug*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_setlocal(lua_State*, lua_Debug*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_getupvalue(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_setupvalue(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_sethook(lua_State*, IntPtr, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_gethook(lua_State*): PrivateScope, Public, Static, HideBySig
+    glua_gethookmask(lua_State*): PrivateScope, Public, Static, HideBySig
+    glua_gethookcount(lua_State*): PrivateScope, Public, Static, HideBySig
+    IsClient(lua_State*): PrivateScope, Public, Static, HideBySig
+    IsServer(lua_State*): PrivateScope, Public, Static, HideBySig
+    Shutdown(lua_State*): PrivateScope, Public, Static, HideBySig
+    PushCFunction(lua_State*, Void*): PrivateScope, Public, Static, HideBySig
+    PushGFunction(lua_State*, GFunc): PrivateScope, Public, Static, HideBySig
+    CreateGlobalTable(lua_State*, String): PrivateScope, Public, Static, HideBySig
+    SetGlobalTableGFunc(lua_State*, String, String, GFunc): PrivateScope, Public, Static, HideBySig
+    Top(lua_State*): PrivateScope, Public, Static, HideBySig
+    Push(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    Pop(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    GetTable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    GetField(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    SetField(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    CreateTable(lua_State*): PrivateScope, Public, Static, HideBySig
+    SetTable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    SetMetaTable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    GetMetaTable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    Call(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    PCall(lua_State*, Int32, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    Equal(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    RawEqual(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    Insert(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    Remove(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    Next(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    NewUserdata(lua_State*, UInt32): PrivateScope, Public, Static, HideBySig
+    ThrowError(lua_State*, String): PrivateScope, Public, Static, HideBySig
+    CheckType(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    ArgError(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    RawGet(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    RawSet(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    GetString(lua_State*, Int32, UInt32*): PrivateScope, Public, Static, HideBySig
+    GetNumber(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    GetBool(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    GetCFunction(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    GetUserdata(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    PushNil(lua_State*): PrivateScope, Public, Static, HideBySig
+    PushString(lua_State*, String): PrivateScope, Public, Static, HideBySig
+    PushString(lua_State*, String, UInt32): PrivateScope, Public, Static, HideBySig
+    PushNumber(lua_State*, Double): PrivateScope, Public, Static, HideBySig
+    PushBool(lua_State*, Boolean(HasFieldMarshal)): PrivateScope, Public, Static, HideBySig
+    PushCClosure(lua_State*, Void*, Int32): PrivateScope, Public, Static, HideBySig
+    PushUserdata(lua_State*, Void*): PrivateScope, Public, Static, HideBySig
+    ReferenceCreate(lua_State*): PrivateScope, Public, Static, HideBySig
+    ReferenceFree(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    ReferencePush(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    PushSpecial(lua_State*, SPECIAL): PrivateScope, Public, Static, HideBySig
+    IsType(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    GetType(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    GetTypeName(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    CreateMetaTableType(lua_State*, String, Int32): PrivateScope, Public, Static, HideBySig
+    CheckString(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    CheckNumber(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    EmptyGFunc(lua_State*): PrivateScope, Public, Static, HideBySig
+    CreateClassLib(lua_State*, Type): PrivateScope, Public, Static, HideBySig
+    gluaL_register(lua_State*, String, luaL_Reg*): PrivateScope, Public, Static, HideBySig
+    gluaL_getmetafield(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    gluaL_callmeta(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    gluaL_typerror(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    gluaL_argerror(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    gluaL_checklstring(lua_State*, Int32, UInt32*): PrivateScope, Public, Static, HideBySig
+    gluaL_optlstring(lua_State*, Int32, String, UInt32*): PrivateScope, Public, Static, HideBySig
+    gluaL_checknumber(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    gluaL_optnumber(lua_State*, Int32, Double): PrivateScope, Public, Static, HideBySig
+    gluaL_checkinteger(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    gluaL_optinteger(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    gluaL_checkstack(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    gluaL_checktype(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    gluaL_checkany(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    gluaL_newmetatable(lua_State*, String): PrivateScope, Public, Static, HideBySig
+    gluaL_checkudata(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    gluaL_where(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    gluaL_ref(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    gluaL_unref(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    gluaL_loadfile(lua_State*, String): PrivateScope, Public, Static, HideBySig
+    gluaL_loadbuffer(lua_State*, String, UInt32, String): PrivateScope, Public, Static, HideBySig
+    gluaL_loadstring(lua_State*, String): PrivateScope, Public, Static, HideBySig
+    gluaL_newstate(): PrivateScope, Public, Static, HideBySig
+    gluaL_gsub(lua_State*, String, String, String): PrivateScope, Public, Static, HideBySig
+    gluaL_findtable(lua_State*, Int32, String, Int32): PrivateScope, Public, Static, HideBySig
+    gluaL_buffinit(lua_State*, luaL_Buffer*): PrivateScope, Public, Static, HideBySig
+    gluaL_prepbuffer(luaL_Buffer*): PrivateScope, Public, Static, HideBySig
+    gluaL_addlstring(luaL_Buffer*, String, UInt32): PrivateScope, Public, Static, HideBySig
+    gluaL_addstring(luaL_Buffer*, String): PrivateScope, Public, Static, HideBySig
+    gluaL_addvalue(luaL_Buffer*): PrivateScope, Public, Static, HideBySig
+    gluaL_pushresult(luaL_Buffer*): PrivateScope, Public, Static, HideBySig
+    glua_newstate(IntPtr, Void*): PrivateScope, Public, Static, HideBySig
+    glua_close(lua_State*): PrivateScope, Public, Static, HideBySig
+    glua_newthread(lua_State*): PrivateScope, Public, Static, HideBySig
+    glua_atpanic(lua_State*, IntPtr): PrivateScope, Public, Static, HideBySig
+    glua_gettop(lua_State*): PrivateScope, Public, Static, HideBySig
+    glua_settop(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_pushvalue(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_remove(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_insert(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_replace(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_checkstack(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_xmove(lua_State*, lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_isnumber(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_isstring(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_iscfunction(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_isuserdata(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_type(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_typename(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_equal(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_rawequal(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_lessthan(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_tonumber(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_tointeger(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_toboolean(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_tolstring(lua_State*, Int32, UInt32*): PrivateScope, Public, Static, HideBySig
+    glua_objlen(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_tocfunction(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_touserdata(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_tothread(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_topointer(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_pushnil(lua_State*): PrivateScope, Public, Static, HideBySig
+    glua_pushnumber(lua_State*, Double): PrivateScope, Public, Static, HideBySig
+    glua_pushinteger(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_pushlstring(lua_State*, String, UInt32): PrivateScope, Public, Static, HideBySig
+    glua_pushstring(lua_State*, String): PrivateScope, Public, Static, HideBySig
+    glua_pushvfstring(lua_State*, String, SByte*): PrivateScope, Public, Static, HideBySig
+    glua_pushcclosure(lua_State*, IntPtr, Int32): PrivateScope, Public, Static, HideBySig
+    glua_pushboolean(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_pushlightuserdata(lua_State*, Void*): PrivateScope, Public, Static, HideBySig
+    glua_pushthread(lua_State*): PrivateScope, Public, Static, HideBySig
+    glua_gettable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_getfield(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    glua_rawget(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_rawgeti(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_createtable(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_newuserdata(lua_State*, UInt32): PrivateScope, Public, Static, HideBySig
+    glua_getmetatable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_getfenv(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_settable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_setfield(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
+    glua_rawset(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+    glua_rawseti(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_setmetatable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
+Class GarrysMod.GLua+Utils: AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Methods:
+    print(lua_State*, String, Boolean(HasFieldMarshal)): PrivateScope, Public, Static, HideBySig
+    print(lua_State*, String): PrivateScope, Public, Static, HideBySig
+    ToExtended(lua_State*): PrivateScope, Public, Static, HideBySig
+    ToExtended(ILuaBase*): PrivateScope, Public, Static, HideBySig
+Struct GarrysMod.SPECIAL: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+  :System.Enum
+  Fields:
+    Int32 value__ : Public, SpecialName, RTSpecialName
+    GarrysMod.SPECIAL GLOB = 0 : Public, Static, Literal, HasDefault
+    GarrysMod.SPECIAL ENV = 1 : Public, Static, Literal, HasDefault
+    GarrysMod.SPECIAL REG = 2 : Public, Static, Literal, HasDefault
