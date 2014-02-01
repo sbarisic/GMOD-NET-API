@@ -1,6 +1,7 @@
 ﻿using GarrysMod;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using System;
 
 namespace gmsv_cartmanium_win32 {
@@ -10,12 +11,12 @@ namespace gmsv_cartmanium_win32 {
 	}
 
 	public unsafe class Cartmanium {
+		static List<GFunc> CartLib;
+
 		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
 		public static int Open(lua_State* L) {
-
-			GLua.CreateClassLib(L, typeof(Cart));
+			CartLib = GLua.CreateClassLib(L, typeof(Cart));
 			GLua.Utils.print(L, "Module loaded!");
-
 			return 0;
 		}
 
@@ -23,11 +24,11 @@ namespace gmsv_cartmanium_win32 {
 		public static int Close(lua_State* L) {
 			return 0;
 		}
-
-		public static lua_State* WAT;
 	}
 
 	public unsafe static class Cart {
+		static int Calls = 0;
+
 		public static int Console(lua_State *L) {
 			int ArgCount = GLua.Top(L);
 			for (int i = 0; i < ArgCount; i++) {
@@ -52,7 +53,8 @@ namespace gmsv_cartmanium_win32 {
 		}
 
 		public static int TEST(lua_State* L) {
-			Cartmanium.WAT = GLua.gluaL_newstate();
+			Calls++;
+			System.Console.WriteLine("Call: {0}", Calls);
 			return 0;
 		}
 	}

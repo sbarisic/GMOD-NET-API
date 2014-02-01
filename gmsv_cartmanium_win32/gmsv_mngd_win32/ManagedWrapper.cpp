@@ -42,7 +42,9 @@ namespace GarrysMod {
 			}
 		};
 
-		static void CreateClassLib(lua_State *L, System::Type ^Lib) {
+		static System::Collections::Generic::List<GFunc^> ^CreateClassLib(lua_State *L, System::Type ^Lib) {
+			auto RetL = gcnew System::Collections::Generic::List<GFunc^>();
+
 			auto Methods = Lib->GetMethods();
 			System::String ^TableName = Lib->Name;
 			GLua::CreateGlobalTable(L, TableName);
@@ -52,10 +54,13 @@ namespace GarrysMod {
 					auto Params = MInfo->GetParameters();
 					if (Params->Length == 1 && Params[0]->ParameterType->FullName == "lua_State*") {
 						GFunc ^Func = (GFunc^)System::Delegate::CreateDelegate(GFuncType, MInfo);
+						RetL->Add(Func);
 						GLua::SetGlobalTableGFunc(L, TableName, MInfo->Name, Func);
 					}
 				}
 			}
+
+			return RetL;
 		}
 
 #include "Wrappers.h"
