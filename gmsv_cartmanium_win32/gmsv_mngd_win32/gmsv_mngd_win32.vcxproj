@@ -48,6 +48,8 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\bin\</OutDir>
     <IncludePath>$(SolutionDir)lua;$(SolutionDir)gmsv_mngd_win32\includes;$(IncludePath)</IncludePath>
+    <LinkKeyFile>$(ALLUSERSPROFILE)\KEY.snk</LinkKeyFile>
+    <LinkDelaySign>false</LinkDelaySign>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -82,6 +84,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>lua_shared.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\lua;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <KeyContainer>
+      </KeyContainer>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
