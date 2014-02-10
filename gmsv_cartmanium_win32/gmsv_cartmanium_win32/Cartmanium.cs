@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System;
+using System.Reflection;
 
 namespace gmsv_cartmanium_win32 {
 	public unsafe class Kernel32 {
@@ -11,8 +12,11 @@ namespace gmsv_cartmanium_win32 {
 	}
 
 	public unsafe class Cartmanium {
+
 		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
 		public static int Open(lua_State* L) {
+			AppDomain.CurrentDomain.SetupInformation.ShadowCopyFiles = "true"; // Enable shadow copying
+
 			Kernel32.AllocConsole();
 
 			GLua.Keepalive.AddList("Cart", GLua.CreateClassLib(L, typeof(Cart)));
@@ -50,7 +54,15 @@ namespace gmsv_cartmanium_win32 {
 
 		public static int ReadLine(lua_State* L) {
 			GLua.PushString(L, System.Console.ReadLine());
-			
+			return 1;
+		}
+
+		public static int Update(lua_State* L) {
+			bool DidUpdate = ManagedWrapper.DoUpdate();
+			if (DidUpdate)
+				GLua.PushString(L, "Update complete!");
+			else
+				GLua.PushString(L, "Update failed!");
 			return 1;
 		}
 

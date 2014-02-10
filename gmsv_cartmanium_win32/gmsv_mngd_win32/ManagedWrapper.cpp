@@ -77,6 +77,10 @@ namespace GarrysMod {
 			}
 		};
 
+		static System::String ^GetTypeName(lua_State* B){
+			return GLua::GetTypeName(B, GLua::GetType(B, 1));
+		}
+
 		static List<GFunc^> ^CreateClassLib(lua_State *L, System::Type ^Lib) {
 			auto RetL = gcnew List<GFunc^>();
 
