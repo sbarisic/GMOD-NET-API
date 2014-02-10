@@ -5,6 +5,27 @@ Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934
 	hash=None, flags=None
 Assembly System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
 	hash=None, flags=None
+Class GarrysMod.gColor: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(Int32, Int32, Int32, Int32): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(Int32, Int32, Int32): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Interfaces:
+    System.IDisposable
+  Fields:
+    Color* Clr : Public
+  Methods:
+    Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
+Class GarrysMod.gISurface: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(vgui.ISurface*): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Interfaces:
+    System.IDisposable
+  Fields:
+    vgui.ISurface* Surf : Public
+  Methods:
+    DrawSetColor(Int32, Int32, Int32, Int32): PrivateScope, Public, HideBySig
+    DrawSetColor(gColor): PrivateScope, Public, HideBySig
+    DrawLine(Int32, Int32, Int32, Int32): PrivateScope, Public, HideBySig
+    Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
 Struct GarrysMod.Lua.ILuaBase: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
   :System.ValueType
 Struct lua_State: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, BeforeFieldInit
@@ -30,6 +51,10 @@ Class GarrysMod.ManagedWrapper: AutoLayout, AnsiClass, Class, Public, BeforeFiel
     Int32 MINOR : Public, Static, InitOnly
     Int32 REVISION : Public, Static, InitOnly
     Int32 BUILD : Public, Static, InitOnly
+Class GarrysMod.Source: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Methods:
+    GetSurface(): PrivateScope, Public, Static, HideBySig
 Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Methods:

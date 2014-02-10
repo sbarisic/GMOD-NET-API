@@ -89,11 +89,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gColor.cpp" />
+    <ClCompile Include="gISurface.cpp" />
     <ClCompile Include="ManagedWrapper.cpp">
       <FileType>CppCode</FileType>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gColor.h" />
+    <ClInclude Include="gISurface.h" />
     <ClInclude Include="GLua.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Wrappers.h" />

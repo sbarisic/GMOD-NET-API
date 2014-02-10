@@ -5,20 +5,35 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Source Files\Bindings">
+      <UniqueIdentifier>{c0b1a374-3bee-44bd-a624-d769017496f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ManagedWrapper.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gISurface.cpp">
+      <Filter>Source Files\Bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="gColor.cpp">
+      <Filter>Source Files\Bindings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLua.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Wrappers.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Wrappers.h">
+      <Filter>Source Files\Bindings</Filter>
+    </ClInclude>
+    <ClInclude Include="gISurface.h">
+      <Filter>Source Files\Bindings</Filter>
+    </ClInclude>
+    <ClInclude Include="gColor.h">
+      <Filter>Source Files\Bindings</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res.rc" />

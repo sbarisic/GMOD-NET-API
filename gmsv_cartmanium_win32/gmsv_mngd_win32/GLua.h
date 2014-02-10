@@ -8,9 +8,15 @@ extern "C" {
 #include "resource.h"
 #undef RESOURCE_H
 
+#include <Windows.h>
+#include <vgui\ISurface.h>
+#include <Color.h>
+
+#include "gISurface.h"
+
 #using <System.dll>
 
-#define MW_VERSION __COUNTER__
+#define Surface vgui::ISurface
 
 using namespace System::Runtime::InteropServices;
 using namespace System::Net;
@@ -36,6 +42,26 @@ namespace GarrysMod {
 		static initonly int MINOR = __MINOR;
 		static initonly int REVISION = __REVISION;
 		static initonly int BUILD = __BUILD;
+	};
+
+	public ref class Source {
+	private:
+		static HMODULE SurfaceDll;
+		static CreateInterfaceFn _CreateInterface;
+
+		static HMODULE GetSurfaceDll() {
+			return GetModuleHandle(L"vguimatsurface.dll");
+		}
+
+		typedef void* (*CreateInterfaceFn)(const char *pName, int *pReturnCode);
+
+		static CreateInterfaceFn GetCreateInterface() {
+			return reinterpret_cast<CreateInterfaceFn>(GetProcAddress(GetSurfaceDll(), "CreateInterface"));
+		}
+	public:
+		static gISurface ^GetSurface() {
+			return gcnew gISurface(reinterpret_cast<Surface*>(GetCreateInterface()(VGUI_SURFACE_INTERFACE_VERSION, nullptr)));
+		}
 	};
 }
 

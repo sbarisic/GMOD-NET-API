@@ -30,6 +30,7 @@ namespace GarrysMod {
 				GLua::Call(L, 1, 0);
 				if (Utils::PrintToConsole)
 					System::Console::WriteLine(S);
+
 			}
 
 			static void print(lua_State* L, System::String ^S, System::Boolean ToConsole) {

@@ -17,7 +17,7 @@ namespace gmsv_cartmanium_win32 {
 		public static int Open(lua_State* L) {
 			Kernel32.AllocConsole();
 
-			GLua.CreateClassLib(L, typeof(Cart));
+			GLua.CreateClassLib(L, typeof(Cart));		
 
 			GLua.Utils.print(L, "Module v{0} loaded!", ManagedWrapper.VERSION);
 			return 0;
@@ -64,6 +64,15 @@ namespace gmsv_cartmanium_win32 {
 		public static int Break(lua_State* L) {
 			if (System.Diagnostics.Debugger.IsAttached)
 				System.Diagnostics.Debugger.Break();
+			return 0;
+		}
+
+		public static int SurfaceTest(lua_State* L) {
+			var Surface = Source.GetSurface();
+			gColor DrawClr = new gColor(0, 255, 0);
+			Surface.DrawSetColor(DrawClr);
+			Surface.DrawLine(0, 0, 100, 100);
+			DrawClr.Dispose();
 			return 0;
 		}
 	}
