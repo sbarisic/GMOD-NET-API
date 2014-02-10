@@ -15,11 +15,9 @@ namespace gmsv_cartmanium_win32 {
 
 		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
 		public static int Open(lua_State* L) {
-			AppDomain.CurrentDomain.SetupInformation.ShadowCopyFiles = "true"; // Enable shadow copying
-
 			Kernel32.AllocConsole();
 
-			GLua.Keepalive.AddList("Cart", GLua.CreateClassLib(L, typeof(Cart)));
+			GLua.CreateClassLib(L, typeof(Cart));
 
 			GLua.Utils.print(L, "Module v{0} loaded!", ManagedWrapper.VERSION);
 			return 0;
@@ -57,18 +55,15 @@ namespace gmsv_cartmanium_win32 {
 			return 1;
 		}
 
-		public static int Update(lua_State* L) {
-			bool DidUpdate = ManagedWrapper.DoUpdate();
-			if (DidUpdate)
-				GLua.PushString(L, "Update complete!");
-			else
-				GLua.PushString(L, "Update failed!");
-			return 1;
-		}
-
-		public static int TEST(lua_State* L) {
+		public static int CallTest(lua_State* L) {
 			Calls++;
 			System.Console.WriteLine("Call: {0}", Calls);
+			return 0;
+		}
+
+		public static int Break(lua_State* L) {
+			if (System.Diagnostics.Debugger.IsAttached)
+				System.Diagnostics.Debugger.Break();
 			return 0;
 		}
 	}

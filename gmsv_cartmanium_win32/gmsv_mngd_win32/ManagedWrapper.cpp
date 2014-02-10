@@ -82,6 +82,10 @@ namespace GarrysMod {
 		}
 
 		static List<GFunc^> ^CreateClassLib(lua_State *L, System::Type ^Lib) {
+			return CreateClassLib(L, Lib, true);
+		}
+
+		static List<GFunc^> ^CreateClassLib(lua_State *L, System::Type ^Lib, bool Keepalive) {
 			auto RetL = gcnew List<GFunc^>();
 
 			auto Methods = Lib->GetMethods();
@@ -98,6 +102,9 @@ namespace GarrysMod {
 					}
 				}
 			}
+
+			if (Keepalive)
+				GLua::Keepalive::AddList(Lib->Name, RetL);
 
 			return RetL;
 		}

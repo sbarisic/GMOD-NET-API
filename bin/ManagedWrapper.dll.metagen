@@ -30,13 +30,10 @@ Class GarrysMod.ManagedWrapper: AutoLayout, AnsiClass, Class, Public, BeforeFiel
     Int32 MINOR : Public, Static, InitOnly
     Int32 REVISION : Public, Static, InitOnly
     Int32 BUILD : Public, Static, InitOnly
-  Methods:
-    IsLatest(): PrivateScope, Public, Static, HideBySig
-    DoUpdate(String): PrivateScope, Public, Static, HideBySig
-    DoUpdate(): PrivateScope, Public, Static, HideBySig
 Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Methods:
+    glua_rawset(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
     glua_rawseti(lua_State*, Int32, Int32): PrivateScope, Public, Static, HideBySig
     glua_setmetatable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
     glua_setfenv(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
@@ -119,6 +116,7 @@ Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     EmptyGFunc(lua_State*): PrivateScope, Public, Static, HideBySig
     GetTypeName(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
     GetTypeName(lua_State*): PrivateScope, Public, Static, HideBySig
+    CreateClassLib(lua_State*, Type, Boolean(HasFieldMarshal)): PrivateScope, Public, Static, HideBySig
     CreateClassLib(lua_State*, Type): PrivateScope, Public, Static, HideBySig
     gluaL_register(lua_State*, String, luaL_Reg*): PrivateScope, Public, Static, HideBySig
     gluaL_getmetafield(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
@@ -201,7 +199,6 @@ Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     glua_getfenv(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
     glua_settable(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
     glua_setfield(lua_State*, Int32, String): PrivateScope, Public, Static, HideBySig
-    glua_rawset(lua_State*, Int32): PrivateScope, Public, Static, HideBySig
 Class GarrysMod.GLua+Utils: AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Fields:

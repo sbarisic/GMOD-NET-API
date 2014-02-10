@@ -8,7 +8,7 @@
 
 #define __MAJOR 1
 #define __MINOR 1
-#define __REVISION 6
+#define __REVISION 7
 #define __BUILD 0
 #define __VERSION DSTR(__MAJOR) DSTR(DOT) DSTR(__MINOR) DSTR(DOT) DSTR(__REVISION) DSTR(DOT) DSTR(__BUILD)
 

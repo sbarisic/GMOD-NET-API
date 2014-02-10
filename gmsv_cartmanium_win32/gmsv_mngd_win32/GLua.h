@@ -36,31 +36,6 @@ namespace GarrysMod {
 		static initonly int MINOR = __MINOR;
 		static initonly int REVISION = __REVISION;
 		static initonly int BUILD = __BUILD;
-
-		static bool IsLatest() {
-			WebClient ^WC = gcnew WebClient();
-			auto VER = WC->DownloadString(ManagedWrapper::VERSION_LINK);
-			if (VER != ManagedWrapper::VERSION) return false;
-			return true;
-		}
-
-		static bool DoUpdate() {
-			return ManagedWrapper::DoUpdate(gcnew System::String("ManagedWrapper.dll"));
-		}
-
-		static bool DoUpdate(System::String ^NewFilename) {
-			try {
-				if (!ManagedWrapper::IsLatest()) {
-					WebClient ^WC = gcnew WebClient();
-					WC->DownloadFile(ManagedWrapper::BINARY_LINK, NewFilename);
-					return true;
-				}
-			} catch(System::Exception ^E) {
-				System::Console::WriteLine(E->Message);
-				return false;
-			}
-			return false;
-		}
 	};
 }
 
