@@ -20,6 +20,7 @@ Garry's Mod Managed Application Programming Interface
 * Write your code!
 * Compile, put into garrysmod/lua/bin and require() it ingame!
 * Note: Make sure the exported functions (Unmanaged Exports) have to be in a public class, else it won't work!
+* Note 2: Also make sure you compile your project as x86, else Unmanaged Exports won't do it's magic!
 
 ##### What if i don't know how to do it/have bug/%insert_shit_here%?
 * In case of a bug make an issue here on github

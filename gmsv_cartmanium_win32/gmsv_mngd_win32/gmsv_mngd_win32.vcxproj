@@ -91,6 +91,7 @@
   <ItemGroup>
     <ClCompile Include="gColor.cpp" />
     <ClCompile Include="gISurface.cpp" />
+    <ClCompile Include="gSteamAPI.cpp" />
     <ClCompile Include="ManagedWrapper.cpp">
       <FileType>CppCode</FileType>
     </ClCompile>
@@ -99,6 +100,7 @@
     <ClInclude Include="gColor.h" />
     <ClInclude Include="gISurface.h" />
     <ClInclude Include="GLua.h" />
+    <ClInclude Include="gSteamAPI.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Wrappers.h" />
   </ItemGroup>

@@ -13,10 +13,12 @@ extern "C" {
 #include <Color.h>
 
 #include "gISurface.h"
+#include "gSteamAPI.h"
 
 #using <System.dll>
 
 #define Surface vgui::ISurface
+#define rcast reinterpret_cast
 
 using namespace System::Runtime::InteropServices;
 using namespace System::Net;
@@ -35,8 +37,6 @@ namespace GarrysMod {
 
 	public ref class ManagedWrapper {
 	public:
-		static initonly System::String ^BINARY_LINK = gcnew System::String("https://github.com/cartman300/GMOD-NET-API/raw/master/bin/ManagedWrapper.dll");
-		static initonly System::String ^VERSION_LINK = gcnew System::String("https://github.com/cartman300/GMOD-NET-API/raw/master/bin/Version.txt");
 		static initonly System::String ^VERSION = gcnew System::String(__VERSION);
 		static initonly int MAJOR = __MAJOR;
 		static initonly int MINOR = __MINOR;
@@ -46,25 +46,24 @@ namespace GarrysMod {
 
 	public ref class Source {
 	private:
-		static HMODULE SurfaceDll;
-		static CreateInterfaceFn _CreateInterface;
-
-		static HMODULE GetSurfaceDll() {
-			return GetModuleHandle(L"vguimatsurface.dll");
-		}
-
 		typedef void* (*CreateInterfaceFn)(const char *pName, int *pReturnCode);
 
-		static CreateInterfaceFn GetCreateInterface() {
-			return reinterpret_cast<CreateInterfaceFn>(GetProcAddress(GetSurfaceDll(), "CreateInterface"));
-		}
 	public:
 		static gISurface ^GetSurface() {
-			return gcnew gISurface(reinterpret_cast<Surface*>(GetCreateInterface()(VGUI_SURFACE_INTERFACE_VERSION, nullptr)));
+			auto MHandle = GetModuleHandle(L"vguimatsurface.dll");
+			auto CreateInterface = rcast<CreateInterfaceFn>(GetProcAddress(MHandle, "CreateInterface"));
+			return gcnew gISurface(rcast<Surface*>(CreateInterface(VGUI_SURFACE_INTERFACE_VERSION, nullptr)));
 		}
+
+		/*static ISteamUtils* GetSteamUtils() {
+			auto MHandle = GetModuleHandle(L"Steam.dll");
+			auto CreateInterface = rcast<CreateInterfaceFn>(GetProcAddress(MHandle, "CreateInterface"));
+			return rcast<ISteamUtils*>(CreateInterface(STEAMUTILS_INTERFACE_VERSION, nullptr));
+		}*/
 	};
 }
 
 #define CSTR(N) const char* N = (const char*)(void*)Marshal::StringToHGlobalAnsi( STR_##N )
-#define DSTR(N) Marshal::FreeHGlobal(System::IntPtr((void*) N ))
+//#define DSTR(N) Marshal::FreeHGlobal(System::IntPtr((void*) N ))
+#define DSTR(N) free((void*) N )
 #define RSTR(N) gcnew System::String( N )

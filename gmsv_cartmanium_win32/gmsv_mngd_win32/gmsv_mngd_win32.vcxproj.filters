@@ -19,6 +19,9 @@
     <ClCompile Include="gColor.cpp">
       <Filter>Source Files\Bindings</Filter>
     </ClCompile>
+    <ClCompile Include="gSteamAPI.cpp">
+      <Filter>Source Files\Bindings</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLua.h">
@@ -32,6 +35,9 @@
       <Filter>Source Files\Bindings</Filter>
     </ClInclude>
     <ClInclude Include="gColor.h">
+      <Filter>Source Files\Bindings</Filter>
+    </ClInclude>
+    <ClInclude Include="gSteamAPI.h">
       <Filter>Source Files\Bindings</Filter>
     </ClInclude>
   </ItemGroup>
