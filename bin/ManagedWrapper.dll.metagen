@@ -15,8 +15,17 @@ Class GarrysMod.gColor: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Color* Clr : Public
   Methods:
     Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
+Struct GarrysMod.Lua.ILuaBase: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
+  :System.ValueType
+Struct lua_State: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, BeforeFieldInit
+  :System.ValueType
+Struct GarrysMod.Lua.ILuaCallback: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
+  :System.ValueType
+Struct GarrysMod.Lua.ILuaExtended: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
+  :System.ValueType
 Class GarrysMod.gISurface: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(vgui.ISurface*): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Interfaces:
     System.IDisposable
   Fields:
@@ -26,14 +35,6 @@ Class GarrysMod.gISurface: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     DrawSetColor(gColor): PrivateScope, Public, HideBySig
     DrawLine(Int32, Int32, Int32, Int32): PrivateScope, Public, HideBySig
     Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
-Struct GarrysMod.Lua.ILuaBase: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
-  :System.ValueType
-Struct lua_State: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, BeforeFieldInit
-  :System.ValueType
-Struct GarrysMod.Lua.ILuaCallback: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
-  :System.ValueType
-Struct GarrysMod.Lua.ILuaExtended: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
-  :System.ValueType
 Class GarrysMod.gSteamAPI: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Interfaces:
@@ -59,7 +60,7 @@ Class GarrysMod.ManagedWrapper: AutoLayout, AnsiClass, Class, Public, BeforeFiel
 Class GarrysMod.Source: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Methods:
-    GetSurface(): PrivateScope, Public, Static, HideBySig
+    GetInterface<vgui::ISurface>(Char*, SByte*): PrivateScope, Public, Static, HideBySig
 Struct GarrysMod.Lua.Type: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
   :System.Enum
   Fields:

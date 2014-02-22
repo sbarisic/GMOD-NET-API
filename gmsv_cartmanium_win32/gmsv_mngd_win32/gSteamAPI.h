@@ -1,3 +1,4 @@
+#pragma once
 //#include <steam\isteamutils.h>
 #include <steam\steam_api.h>
 

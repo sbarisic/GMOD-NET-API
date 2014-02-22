@@ -1,3 +1,5 @@
+#pragma once
+
 extern "C" {
 	#include "lua.h"
 	#include "lualib.h"
@@ -14,6 +16,7 @@ extern "C" {
 
 #include "gISurface.h"
 #include "gSteamAPI.h"
+#include <vgui\IVGui.h>
 
 #using <System.dll>
 
@@ -49,17 +52,11 @@ namespace GarrysMod {
 		typedef void* (*CreateInterfaceFn)(const char *pName, int *pReturnCode);
 
 	public:
-		static gISurface ^GetSurface() {
-			auto MHandle = GetModuleHandle(L"vguimatsurface.dll");
-			auto CreateInterface = rcast<CreateInterfaceFn>(GetProcAddress(MHandle, "CreateInterface"));
-			return gcnew gISurface(rcast<Surface*>(CreateInterface(VGUI_SURFACE_INTERFACE_VERSION, nullptr)));
+		 template <typename T> static T* GetInterface(LPCWSTR DllName, const char* IName) {
+			auto MHandle = GetModuleHandle(DllName);
+			auto CInt = rcast<CreateInterfaceFn>(GetProcAddress(MHandle, "CreateInterface"));
+			return rcast<T*>(CInt(IName, nullptr));
 		}
-
-		/*static ISteamUtils* GetSteamUtils() {
-			auto MHandle = GetModuleHandle(L"Steam.dll");
-			auto CreateInterface = rcast<CreateInterfaceFn>(GetProcAddress(MHandle, "CreateInterface"));
-			return rcast<ISteamUtils*>(CreateInterface(STEAMUTILS_INTERFACE_VERSION, nullptr));
-		}*/
 	};
 }
 

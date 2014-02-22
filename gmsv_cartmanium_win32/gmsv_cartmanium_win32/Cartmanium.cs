@@ -12,12 +12,13 @@ namespace gmsv_cartmanium_win32 {
 	}
 
 	public unsafe class Cartmanium {
+		static gSteamAPI SteamAPI = new gSteamAPI();
 
 		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
 		public static int Open(lua_State* L) {
 			Kernel32.AllocConsole();
 
-			GLua.CreateClassLib(L, typeof(Cart));		
+			GLua.CreateClassLib(L, typeof(Cart));
 
 			GLua.Utils.print(L, "Module v{0} loaded!", ManagedWrapper.VERSION);
 			return 0;
@@ -68,7 +69,7 @@ namespace gmsv_cartmanium_win32 {
 		}
 
 		public static int SurfaceTest(lua_State* L) {
-			var Surface = Source.GetSurface();
+			var Surface = new gISurface();
 			gColor DrawClr = new gColor(0, 255, 0);
 			Surface.DrawSetColor(DrawClr);
 			Surface.DrawLine(0, 0, 100, 100);

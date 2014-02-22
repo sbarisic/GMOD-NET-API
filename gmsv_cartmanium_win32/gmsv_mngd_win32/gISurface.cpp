@@ -1,9 +1,17 @@
+#include "GLua.h"
 #include "gISurface.h"
 
 namespace GarrysMod {
+	void gISurface::Init(vgui::ISurface* S) {
+		this->Surf = S;
+	}
+
+	gISurface::gISurface() {
+		this->Init(Source::GetInterface<vgui::ISurface>(L"vguimatsurface.dll", VGUI_SURFACE_INTERFACE_VERSION));
+	}
 
 	gISurface::gISurface(vgui::ISurface* S) {
-		Surf = S;
+		this->Init(S);
 	}
 
 	gISurface::~gISurface() {

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Windows.h>
 #include <vgui\ISurface.h>
 #include <Color.h>
@@ -5,10 +7,14 @@
 
 namespace GarrysMod {
 	public ref class gISurface {
+	private:
+		void Init(vgui::ISurface*);
+
 	public:
 		vgui::ISurface* Surf;
 
-		gISurface(vgui::ISurface* S);
+		gISurface();
+		gISurface(vgui::ISurface*);
 		~gISurface();
 
 		void DrawSetColor(gColor ^C);
