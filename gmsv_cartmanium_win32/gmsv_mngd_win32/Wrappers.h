@@ -93,17 +93,13 @@ static void gluaL_where(lua_State *L, int lvl) {
 	return luaL_where(L, lvl);
 }
 
-/* TODO
-static int gluaL_error(lua_State *L, System::String ^STR_fmt, ...) {
-	return luaL_error(L, fmt, ...);
+static int gluaL_error(lua_State *L, System::String ^STR_str) {
+	CSTR(str);
+	int R = luaL_error(L, "%s", str);
+	return R;
 }
-*/
 
-/* TODO
-static int gluaL_checkoption(lua_State *L, int narg, System::String ^STR_def, System::String ^STR_const lst[]) {
-	return luaL_checkoption(L, narg, def, lst[]);
-}
-*/
+// FUNCTION gluaL_checkoption EXPUNGED
 
 static int gluaL_ref(lua_State *L, int t) {
 	return luaL_ref(L, t);
@@ -268,6 +264,10 @@ static lua_Number glua_tonumber(lua_State *L, int idx) {
 	return lua_tonumber(L, idx);
 }
 
+static System::String ^glua_tostring(lua_State* L, int idx) {
+	return RSTR(lua_tostring(L, idx));
+}
+
 static lua_Integer glua_tointeger(lua_State *L, int idx) {
 	return lua_tointeger(L, idx);
 }
@@ -331,11 +331,12 @@ static System::String ^glua_pushvfstring(lua_State *L, System::String ^STR_fmt, 
 	return RSTR(RET);
 }
 
-/* TODO
-static System::String ^glua_pushfstring(lua_State *L, System::String ^STR_fmt, ...) {
-	return lua_pushfstring(L, fmt, ...);
+static void glua_pushfstring(lua_State *L, System::String ^STR_fmt, params array<System::Object^> ^Args) {
+	System::String ^STR_format = System::String::Format(STR_fmt, Args);
+	CSTR(format);
+	lua_pushstring(L, format);
+	DSTR(format);
 }
-*/
 
 static void glua_pushcclosure(lua_State *L, lua_CFunction fn, int n) {
 	return lua_pushcclosure(L, fn, n);
@@ -440,7 +441,7 @@ static int glua_yield(lua_State *L, int nresults) {
 	return lua_yield(L, nresults);
 }
 
-/* TODO
+/* // FUNCTION glua_resume EXPUNGED
 static int glua_resume(lua_State *L, int narg) {
 	return lua_resume(L, narg);
 }
@@ -474,7 +475,7 @@ static void glua_setallocf(lua_State *L, lua_Alloc f, void *ud) {
 	return lua_setallocf(L, f, ud);
 }
 
-/* TODO
+/* // FUNCTION glua_setlevel EXPUNGED
 static void glua_setlevel(lua_State *from, lua_State *to) {
 	return lua_setlevel(from, to);
 }

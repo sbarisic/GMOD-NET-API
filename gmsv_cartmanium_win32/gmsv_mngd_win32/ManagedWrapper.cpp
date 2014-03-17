@@ -17,6 +17,8 @@ using namespace System::Collections::Generic;
 namespace GarrysMod {
 	public ref class GLua {
 	private:
+		static bool SkipMetamethods = false; // Ugly hack
+
 	public:
 		ref class Utils {
 		public:
@@ -39,8 +41,15 @@ namespace GarrysMod {
 				Utils::PrintToConsole = oPTC;
 			}
 
-			static void print(lua_State* L, System::String ^S, ... array<Object^>^ VArgs) {
+			static void print(lua_State* L, System::String ^S, params array<Object^>^ VArgs) {
 				Utils::print(L, System::String::Format(S, VArgs));
+			}
+
+			static int DoString(lua_State* L, System::String ^STR_S) {
+				CSTR(S);
+				int R = luaL_dostring(L, S);
+				DSTR(S);
+				return R;
 			}
 
 			static ILuaExtended* ToExtended(ILuaBase* B) {
@@ -82,13 +91,12 @@ namespace GarrysMod {
 			return GLua::GetTypeName(B, GLua::GetType(B, 1));
 		}
 
-		static List<GFunc^> ^CreateClassLib(lua_State *L, System::Type ^Lib) {
-			return CreateClassLib(L, Lib, true);
+		static List<GFunc^> ^CreateLib(lua_State *L, System::Type ^Lib) {
+			return CreateLib(L, Lib, true);
 		}
 
-		static List<GFunc^> ^CreateClassLib(lua_State *L, System::Type ^Lib, bool Keepalive) {
+		static List<GFunc^> ^CreateLib(lua_State *L, System::Type ^Lib, bool Keepalive) {
 			auto RetL = gcnew List<GFunc^>();
-
 			auto Methods = Lib->GetMethods();
 			System::String ^TableName = Lib->Name;
 			GLua::CreateGlobalTable(L, TableName);
@@ -99,6 +107,18 @@ namespace GarrysMod {
 					if (Params->Length == 1 && Params[0]->ParameterType->FullName == "lua_State*") {
 						GFunc ^Func = (GFunc^)System::Delegate::CreateDelegate(GFuncType, MInfo);
 						RetL->Add(Func);
+						if (SkipMetamethods && MInfo->Name->StartsWith("__")) {
+							PushSpecial(L, GarrysMod::SPECIAL::GLOB);
+							PushString(L, Lib->Name);
+							GetTable(L, -2);
+							if (glua_getmetatable(L, -1) == 0)
+								glua_createtable(L, 0, 0);
+							PushGFunction(L, Func);
+							glua_setfield(L, -2, MInfo->Name);
+							glua_setmetatable(L, -2);
+							GLua::Pop(L, 1);
+							continue;
+						} 
 						GLua::SetGlobalTableGFunc(L, TableName, MInfo->Name, Func);
 					}
 				}
@@ -109,6 +129,19 @@ namespace GarrysMod {
 
 			return RetL;
 		}
+
+		// Ugly hack begin.
+		static List<GFunc^> ^CreateType(lua_State* L, System::Type ^Typ) {
+			return CreateType(L, Typ, true);
+		}
+
+		static List<GFunc^> ^CreateType(lua_State* L, System::Type ^Typ, bool Keepalive) {
+			SkipMetamethods = true;
+			List<GFunc^> ^GFL = CreateLib(L, Typ, Keepalive);
+			SkipMetamethods = false;
+			return GFL;
+		}
+		// Ugly hack end.
 
 #include "Wrappers.h"
 
@@ -195,6 +228,12 @@ namespace GarrysMod {
 
 		static void CreateTable(lua_State* L) {
 			L->luabase->CreateTable();
+		}
+
+		static void GetTableVal(lua_State* L, params array<System::String^> ^TableNames) {
+			PushSpecial(L, GarrysMod::SPECIAL::GLOB);
+			for each (System::String ^Name in TableNames)
+				GetField(L, -1, Name);
 		}
 
 		static void SetTable(lua_State* L, int i) {

@@ -64,3 +64,4 @@ namespace GarrysMod {
 //#define DSTR(N) Marshal::FreeHGlobal(System::IntPtr((void*) N ))
 #define DSTR(N) free((void*) N )
 #define RSTR(N) gcnew System::String( N )
+#define params ...

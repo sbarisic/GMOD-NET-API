@@ -18,9 +18,9 @@ namespace gmsv_cartmanium_win32 {
 		public static int Open(lua_State* L) {
 			Kernel32.AllocConsole();
 
-			GLua.CreateClassLib(L, typeof(Cart));
+			GLua.CreateType(L, typeof(Cart));
 
-			GLua.Utils.print(L, "Module v{0} loaded!", ManagedWrapper.VERSION);
+			GLua.Utils.print(L, string.Format("ManagedWrapper v{0} loaded", ManagedWrapper.VERSION));
 			return 0;
 		}
 
@@ -32,6 +32,11 @@ namespace gmsv_cartmanium_win32 {
 
 	public unsafe static class Cart {
 		static int Calls = 0;
+
+		public static int __tostring(lua_State* L) {
+			GLua.PushString(L, "IT'S A MOTHERFUCKING CART TABLE!");
+			return 1;
+		}
 
 		public static int Console(lua_State* L) {
 			int ArgCount = GLua.Top(L);
@@ -51,12 +56,18 @@ namespace gmsv_cartmanium_win32 {
 			return 1;
 		}
 
+		public static int Test(lua_State* L) {
+			string S = GLua.CheckString(L, 1);
+			System.Console.WriteLine(">> {0}", S);
+			return 0;
+		}
+
 		public static int ReadLine(lua_State* L) {
 			GLua.PushString(L, System.Console.ReadLine());
 			return 1;
 		}
 
-		public static int CallTest(lua_State* L) {
+		public static int CallCounter(lua_State* L) {
 			Calls++;
 			System.Console.WriteLine("Call: {0}", Calls);
 			return 0;
