@@ -1,9 +1,7 @@
 ﻿using GarrysMod;
+using GarrysMod.Utilities;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using System.Collections.Generic;
 using System;
-using System.Reflection;
 
 namespace gmsv_cartmanium_win32 {
 	public unsafe class Kernel32 {
@@ -12,19 +10,29 @@ namespace gmsv_cartmanium_win32 {
 	}
 
 	public unsafe class Cartmanium {
-		static gSteamAPI SteamAPI = new gSteamAPI();
-
 		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
 		public static int Open(lua_State* L) {
+			ResourceLoader.RegisterAssembly(Properties.Resources.ResourceManager, OverrideName: "Wrapper");
 			Kernel32.AllocConsole();
-
-			GLua.CreateType(L, typeof(Cart));
-
-			GLua.Utils.print(L, string.Format("ManagedWrapper v{0} loaded", ManagedWrapper.VERSION));
-			return 0;
+			return Module.Open(L);
 		}
 
 		[RGiesecke.DllExport.DllExport("gmod13_close", CallingConvention.Cdecl)]
+		public static int Close(lua_State* L) {
+			return Module.Close(L);
+		}
+	}
+
+	public unsafe static class Module {
+		//static gSteamAPI SteamAPI = new gSteamAPI();
+
+		public static int Open(lua_State* L) {
+			GLua.CreateType(L, typeof(Cart));
+
+			GLua.Utils.print(L, string.Format("Test with ManagedWrapper v{0} loaded", ManagedWrapper.VERSION));
+			return 0;
+		}
+
 		public static int Close(lua_State* L) {
 			return 0;
 		}

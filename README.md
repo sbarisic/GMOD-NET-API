@@ -26,4 +26,7 @@ Garry's Mod Managed Application Programming Interface
 * In case of a bug make an issue here on github
 * In case of anything else add one on Steam
 
+#### Is it possible to embed the wrapper into the module?
+* It is, look in the gmsv_cartmanium_win32 project
+
 [Steam profile](http://steamcommunity.com/id/cartman300/)

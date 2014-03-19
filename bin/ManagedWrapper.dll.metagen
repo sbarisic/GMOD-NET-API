@@ -61,6 +61,7 @@ Class GarrysMod.Source: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Methods:
     GetInterface<vgui::ISurface>(Char*, SByte*): PrivateScope, Public, Static, HideBySig
+    GetInterfaceInDll(String, String): PrivateScope, Public, Static, HideBySig
 Struct GarrysMod.Lua.Type: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
   :System.Enum
   Fields:
