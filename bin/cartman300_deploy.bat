@@ -2,7 +2,9 @@
 IF exist "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod" (
 	COPY gmsv_cartmanium_win32.dll "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod\garrysmod\lua\bin" /Y
 	COPY gmsv_cartmanium_win32.dll "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod\garrysmod\lua\bin\gmcl_cartmanium_win32.dll" /Y
-	REM COPY ManagedWrapper.dll "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod" /Y
+	COPY gmsv_netscript_win32.dll "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod\garrysmod\lua\bin\gmcl_netscript_win32.dll" /Y
+	COPY gmsv_netscript_win32.dll "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod\garrysmod\lua\bin" /Y
+	COPY ManagedWrapper.dll "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod" /Y
 	REM COPY ..\lua\lua51.dll "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod" /Y
 	COPY gmcl_steamapi_win32.dll "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod\garrysmod\lua\bin" /Y
 	COPY gmcl_steamapi_win32.dll "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod\garrysmod\lua\bin\gmsv_steamapi_win32.dll" /Y
@@ -11,7 +13,7 @@ IF exist "E:\Program Files\DarkSteam\client\steamapps\common\garrysmod" (
 	IF exist "D:\Steam\SteamApps\common\garrysmod" (
 		COPY gmsv_cartmanium_win32.dll "D:\Steam\SteamApps\common\garrysmod\garrysmod\lua\bin" /Y
 		COPY gmsv_cartmanium_win32.dll "D:\Steam\SteamApps\common\garrysmod\garrysmod\lua\bin\gmcl_cartmanium_win32.dll" /Y
-		REM COPY ManagedWrapper.dll "D:\Steam\SteamApps\common\garrysmod" /Y
+		COPY ManagedWrapper.dll "D:\Steam\SteamApps\common\garrysmod" /Y
 		REM COPY ..\lua\lua51.dll "D:\Steam\SteamApps\common\garrysmod" /Y
 		COPY gmcl_steamapi_win32.dll "D:\Steam\SteamApps\common\garrysmod\garrysmod\lua\bin" /Y
 		COPY gmcl_steamapi_win32.dll "D:\Steam\SteamApps\common\garrysmod\garrysmod\lua\bin\gmsv_steamapi_win32.dll" /Y

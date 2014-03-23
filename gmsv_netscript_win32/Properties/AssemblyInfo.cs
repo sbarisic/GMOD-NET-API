@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("gmcl_steamapi_win32")]
+[assembly: AssemblyTitle("gmsv_netscript_win32")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("gmcl_steamapi_win32")]
+[assembly: AssemblyProduct("gmsv_netscript_win32")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d9eea1e1-ff78-4e6d-8df9-379e87554a85")]
+[assembly: Guid("7ded961a-c12d-4807-9dc9-b1a876f40314")]
 
 // Version information for an assembly consists of the following four values:
 //

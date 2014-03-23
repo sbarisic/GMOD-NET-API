@@ -12,7 +12,7 @@ namespace gmsv_cartmanium_win32 {
 	public unsafe class Cartmanium {
 		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
 		public static int Open(lua_State* L) {
-			ResourceLoader.RegisterAssembly(Properties.Resources.ResourceManager, OverrideName: "Wrapper");
+			//ResourceLoader.RegisterAssembly(Properties.Resources.ResourceManager, OverrideName: "Wrapper");
 			Kernel32.AllocConsole();
 			return Module.Open(L);
 		}
