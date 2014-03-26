@@ -5,6 +5,8 @@ Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934
 	hash=None, flags=None
 Assembly System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
 	hash=None, flags=None
+Assembly System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
 Class GarrysMod.GColor: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(Int32, Int32, Int32, Int32): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
     Void .ctor(Int32, Int32, Int32): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName

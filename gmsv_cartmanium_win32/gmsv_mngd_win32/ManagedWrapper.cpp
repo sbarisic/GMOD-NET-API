@@ -3,6 +3,7 @@
 #include "GLua.h"
 
 #using <mscorlib.dll>
+#using <System.Windows.Forms.dll>
 
 #define or ||
 #define PRINT(P) Console::WriteLine(P)
@@ -104,7 +105,7 @@ namespace GarrysMod {
 			for each (auto MInfo in Methods) {
 				if (MInfo->ReturnType == (1).GetType()) {
 					auto Params = MInfo->GetParameters();
-					if (Params->Length == 1 && Params[0]->ParameterType->FullName == "IntPtr") {
+					if (Params->Length == 1 && Params[0]->ParameterType->FullName == "System.IntPtr") {
 						GFunc ^Func = (GFunc^)System::Delegate::CreateDelegate(GFuncType, MInfo);
 						RetL->Add(Func);
 						if (SkipMetamethods && MInfo->Name->StartsWith("__")) {
