@@ -1,32 +1,32 @@
 #include "GLua.h"
-#include "gISurface.h"
+#include "GISurface.h"
 
 namespace GarrysMod {
-	void gISurface::Init(vgui::ISurface* S) {
+	void GISurface::Init(vgui::ISurface* S) {
 		this->Surf = S;
 	}
 
-	gISurface::gISurface() {
+	GISurface::GISurface() {
 		this->Init(Source::GetInterface<vgui::ISurface>(L"vguimatsurface.dll", VGUI_SURFACE_INTERFACE_VERSION));
 	}
 
-	gISurface::gISurface(vgui::ISurface* S) {
+	GISurface::GISurface(vgui::ISurface* S) {
 		this->Init(S);
 	}
 
-	gISurface::~gISurface() {
+	GISurface::~GISurface() {
 	}
 
 
-	void gISurface::DrawSetColor(gColor ^C) {
+	void GISurface::DrawSetColor(GColor ^C) {
 		Surf->DrawSetColor(*C->Clr);
 	}
 
-	void gISurface::DrawSetColor(int R, int G, int B, int A) {
+	void GISurface::DrawSetColor(int R, int G, int B, int A) {
 		Surf->DrawSetColor(R, G, B, A);
 	}
 
-	void gISurface::DrawLine(int X1, int Y1, int X2, int Y2) {
+	void GISurface::DrawLine(int X1, int Y1, int X2, int Y2) {
 		Surf->DrawLine(X1, Y1, X2, Y2);
 	}
 

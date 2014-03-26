@@ -7,8 +7,8 @@
 #define DOT .
 
 #define __MAJOR 1
-#define __MINOR 3
-#define __REVISION 0
+#define __MINOR 4
+#define __REVISION 1
 #define __BUILD 0
 #define __VERSION DSTR(__MAJOR) DSTR(DOT) DSTR(__MINOR) DSTR(DOT) DSTR(__REVISION) DSTR(DOT) DSTR(__BUILD)
 

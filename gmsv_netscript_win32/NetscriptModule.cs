@@ -18,18 +18,18 @@ namespace gmsv_netscript_win32 {
 
 	public unsafe static class NetscriptModule {
 		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
-		public static int Open(lua_State* L) {
+		public static int Open(IntPtr L) {
 			return Module.Open(L);
 		}
 
 		[RGiesecke.DllExport.DllExport("gmod13_close", CallingConvention.Cdecl)]
-		public static int Close(lua_State* L) {
+		public static int Close(IntPtr L) {
 			return Module.Close(L);
 		}
 	}
 
 	internal unsafe static class Module {
-		public static int Open(lua_State* L) {
+		public static int Open(IntPtr L) {
 			try {
 				GLua.CreateLib(L, typeof(Netscript));
 				NetscriptDomain.ReloadAll(L);
@@ -39,23 +39,23 @@ namespace gmsv_netscript_win32 {
 			return 0;
 		}
 
-		public static int Close(lua_State* L) {
+		public static int Close(IntPtr L) {
 			return 0;
 		}
 	}
 
 	public unsafe static class Netscript {
-		public static int Load(lua_State* L) {
+		public static int Load(IntPtr L) {
 			GLua.PushBool(L, NetscriptDomain.Load(L, GLua.CheckString(L, -1)));
 			return 1;
 		}
 
-		public static int Unload(lua_State* L) {
+		public static int Unload(IntPtr L) {
 			GLua.PushBool(L, NetscriptDomain.Unload(L, GLua.CheckString(L, -1)));
 			return 1;
 		}
 
-		public static int Reload(lua_State* L) {
+		public static int Reload(IntPtr L) {
 			NetscriptDomain.ReloadAll(L);
 			return 0;
 		}

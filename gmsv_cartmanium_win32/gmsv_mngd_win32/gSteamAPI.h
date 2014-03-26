@@ -5,13 +5,13 @@
 #pragma comment(lib, "steam_api.lib")
 
 namespace GarrysMod {
-	public ref class gSteamAPI {
+	public ref class GSteamAPI {
 	internal:
 		ISteamUtils* SUtils;
 
 	public:
-		gSteamAPI();
-		~gSteamAPI();
+		GSteamAPI();
+		~GSteamAPI();
 
 		void SetOverlayNotificationPosition(int Pos);
 	};

@@ -4,17 +4,17 @@
 
 namespace GarrysMod {
 
-	public ref class gColor {
+	public ref class GColor {
 	private:
 		void Init(int R, int G, int B, int A);
 
 	public:
 		Color* Clr;
 
-		gColor();
-		gColor(int R, int G, int B);
-		gColor(int R, int G, int B, int A);
-		~gColor();
+		GColor();
+		GColor(int R, int G, int B);
+		GColor(int R, int G, int B, int A);
+		~GColor();
 	};
 
 }

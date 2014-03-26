@@ -3,7 +3,7 @@
 using namespace System;
 using namespace GarrysMod;
 
-gSteamAPI::gSteamAPI() {
+GSteamAPI::GSteamAPI() {
 	if (SteamAPI_Init()) {
 		auto SC = SteamClient();
 		auto SHPipe = GetHSteamPipe();
@@ -11,16 +11,16 @@ gSteamAPI::gSteamAPI() {
 		this->SUtils = SC->GetISteamUtils(SHPipe, STEAMUTILS_INTERFACE_VERSION);
 
 		if (this->SUtils == NULL)
-			throw gcnew Exception("gSteamAPI is NULL!");
+			throw gcnew Exception("GSteamAPI is NULL!");
 	} else 
 		printf("%s\n", "Could not initialize SteamAPI!");
 }
 
-gSteamAPI::~gSteamAPI() {
+GSteamAPI::~GSteamAPI() {
 	SteamAPI_Shutdown();
 }
 
-void gSteamAPI::SetOverlayNotificationPosition(int Pos) {
+void GSteamAPI::SetOverlayNotificationPosition(int Pos) {
 	if (this->SUtils == NULL) return;
 
 	auto P = ENotificationPosition::k_EPositionTopRight;

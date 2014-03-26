@@ -14,8 +14,8 @@ extern "C" {
 #include <vgui\ISurface.h>
 #include <Color.h>
 
-#include "gISurface.h"
-#include "gSteamAPI.h"
+#include "GISurface.h"
+#include "GSteamAPI.h"
 #include <vgui\IVGui.h>
 
 #using <System.dll>
@@ -28,7 +28,7 @@ using namespace System::Net;
 
 namespace GarrysMod {
 	[UnmanagedFunctionPointer(CallingConvention::Cdecl)]
-	public delegate int GFunc(lua_State *L);
+	public delegate int GFunc(System::IntPtr L);
 
 	namespace Lua {
 		public enum class Index : int {
@@ -68,6 +68,7 @@ namespace GarrysMod {
 //#define DSTR(N) Marshal::FreeHGlobal(System::IntPtr((void*) N ))
 #define DSTR(N) free((void*) N )
 #define RSTR(N) gcnew System::String( N )
+#define ToLuaState(LL) ((lua_State*)LL.ToPointer())
 #define params ...
 
 		generic<typename T> static T GetInterfaceInDll(System::String^ STR_DllName, System::String^ STR_InterfaceName) {

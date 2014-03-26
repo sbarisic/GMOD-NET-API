@@ -60,7 +60,7 @@ namespace gmsv_netscript_win32 {
 			return CRes.CompiledAssembly;
 		}
 
-		public static INetScript[] ExecuteFile(lua_State* L, string Pth) {
+		public static INetScript[] ExecuteFile(IntPtr L, string Pth) {
 			List<INetScript> INetScripts = new List<INetScript>();
 			var FileAsm = LoadFile(Pth);
 			Type[] Types = null;
@@ -81,14 +81,14 @@ namespace gmsv_netscript_win32 {
 			return INetScripts.ToArray();
 		}
 
-		public static void Msg(lua_State* L, object O, params object[] OO) {
+		public static void Msg(IntPtr L, object O, params object[] OO) {
 			string S = "[NETSCRIPT] " + O.ToString();
 			if (OO != null)
 				S = string.Format(S, OO);
 			GLua.Utils.print(L, S, true);
 		}
 
-		public static bool Load(lua_State* L, string Pth, bool DoMsg = true) {
+		public static bool Load(IntPtr L, string Pth, bool DoMsg = true) {
 			Init();
 			bool DidLoad = false;
 			try {
@@ -106,7 +106,7 @@ namespace gmsv_netscript_win32 {
 			return DidLoad;
 		}
 
-		public static bool Unload(lua_State* L, string ID, bool DoMsg = true) {
+		public static bool Unload(IntPtr L, string ID, bool DoMsg = true) {
 			INetScript[] Scripts = LoadedScripts.ToArray();
 			LoadedScripts.Clear();
 			bool DidUnload = false;
@@ -135,7 +135,7 @@ namespace gmsv_netscript_win32 {
 			return StringNames.ToArray();
 		}
 
-		public static void ReloadAll(lua_State* L) {
+		public static void ReloadAll(IntPtr L) {
 			var LSIDs = LoadedScriptIDs();
 			foreach (var LSID in LSIDs)
 				Unload(L, LSID, false);
@@ -148,8 +148,8 @@ namespace gmsv_netscript_win32 {
 public unsafe class INetScript {
 	public string ID, Filename;
 	public bool Enabled = true;
-	public virtual void Open(lua_State* L) {
+	public virtual void Open(IntPtr L) {
 	}
-	public virtual void Close(lua_State* L) {
+	public virtual void Close(IntPtr L) {
 	}
 }
