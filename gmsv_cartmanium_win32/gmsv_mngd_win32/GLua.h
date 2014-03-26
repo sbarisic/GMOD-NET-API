@@ -27,8 +27,15 @@ using namespace System::Runtime::InteropServices;
 using namespace System::Net;
 
 namespace GarrysMod {
+	public ref class LuaState {
+	public:
+		LuaState(lua_State* L);
+		LuaState(IntPtr ^IPtr);
+		lua_State* ToLuaState();
+	};
+
 	[UnmanagedFunctionPointer(CallingConvention::Cdecl)]
-	public delegate int GFunc(lua_State *L);
+	public delegate int GFunc(LuaState^ L);
 
 	namespace Lua {
 		public enum class Index : int {
