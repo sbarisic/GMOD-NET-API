@@ -1,5 +1,5 @@
 ImageRuntimeVersion: v4.0.30319
-Assembly ManagedWrapper, Version=0.0.0.0, Culture=neutral, PublicKeyToken=69791031bc15852f: 
+Assembly ManagedWrapper, Version=0.0.*, Culture=Invariant Language (Invariant Country): 
 	hash=SHA1, flags=PublicKey
 Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
 	hash=None, flags=None
@@ -10,21 +10,21 @@ Assembly System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=
 Class GarrysMod.GColor: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(Int32, Int32, Int32, Int32): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
     Void .ctor(Int32, Int32, Int32): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(Int32[]): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(Int32*): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(Color*): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Interfaces:
     System.IDisposable
   Fields:
     Color* Clr : Public
   Methods:
+    r(): PrivateScope, Public, HideBySig
+    g(): PrivateScope, Public, HideBySig
+    b(): PrivateScope, Public, HideBySig
+    a(): PrivateScope, Public, HideBySig
+    ToString(): PrivateScope, Public, Virtual, HideBySig
     Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
-Struct GarrysMod.Lua.ILuaBase: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
-  :System.ValueType
-Struct lua_State: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, BeforeFieldInit
-  :System.ValueType
-Struct GarrysMod.Lua.ILuaCallback: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
-  :System.ValueType
-Struct GarrysMod.Lua.ILuaExtended: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
-  :System.ValueType
 Class GarrysMod.GISurface: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(vgui.ISurface*): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
@@ -51,6 +51,20 @@ Class GarrysMod.GFunc: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeField
     Invoke(IntPtr): PrivateScope, Public, Final, Virtual, VtableLayoutMask
     BeginInvoke(IntPtr, AsyncCallback, Object): PrivateScope, Public, Final, Virtual, VtableLayoutMask
     EndInvoke(IAsyncResult): PrivateScope, Public, Final, Virtual, VtableLayoutMask
+Class GarrysMod.GSpewOutputFunc: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+  :System.MulticastDelegate
+    Void .ctor(System.Object, IntPtr): PrivateScope, Public, SpecialName, RTSpecialName
+  Methods:
+    Invoke(Int32, String, Int32, Int32, Int32, Int32): PrivateScope, Public, Final, Virtual, VtableLayoutMask
+    BeginInvoke(Int32, String, Int32, Int32, Int32, Int32, AsyncCallback, Object): PrivateScope, Public, Final, Virtual, VtableLayoutMask
+    EndInvoke(IAsyncResult): PrivateScope, Public, Final, Virtual, VtableLayoutMask
+Class GarrysMod.GLuaWriter: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+  :System.MulticastDelegate
+    Void .ctor(System.Object, IntPtr): PrivateScope, Public, SpecialName, RTSpecialName
+  Methods:
+    Invoke(IntPtr, String, UInt32, IntPtr): PrivateScope, Public, Final, Virtual, VtableLayoutMask
+    BeginInvoke(IntPtr, String, UInt32, IntPtr, AsyncCallback, Object): PrivateScope, Public, Final, Virtual, VtableLayoutMask
+    EndInvoke(IAsyncResult): PrivateScope, Public, Final, Virtual, VtableLayoutMask
 Class GarrysMod.ManagedWrapper: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Fields:
@@ -62,8 +76,25 @@ Class GarrysMod.ManagedWrapper: AutoLayout, AnsiClass, Class, Public, BeforeFiel
 Class GarrysMod.Source: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Methods:
-    GetInterface<vgui::ISurface>(Char*, SByte*): PrivateScope, Public, Static, HideBySig
+    CharToLPCWSTR(SByte*): PrivateScope, Public, Static, HideBySig
     GetInterfaceInDll(String, String): PrivateScope, Public, Static, HideBySig
+    StrToTchar(String): PrivateScope, Public, Static, HideBySig
+    GetInterface<vgui::ISurface>(SByte*, SByte*): PrivateScope, Public, Static, HideBySig
+Struct GarrysMod.Lua.ILuaBase: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
+  :System.ValueType
+Struct lua_State: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, BeforeFieldInit
+  :System.ValueType
+Struct GarrysMod.Lua.ILuaCallback: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
+  :System.ValueType
+Struct GarrysMod.Lua.ILuaExtended: AutoLayout, AnsiClass, Class, Public, SequentialLayout, Abstract, Sealed, BeforeFieldInit
+  :System.ValueType
+Struct GarrysMod.Lua.Index: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+  :System.Enum
+  Fields:
+    Int32 value__ : Public, SpecialName, RTSpecialName
+    GarrysMod.Lua.Index REGISTRY = -10000 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Index ENVIRONMENT = -10001 : Public, Static, Literal, HasDefault
+    GarrysMod.Lua.Index GLOBAL = -10002 : Public, Static, Literal, HasDefault
 Struct GarrysMod.Lua.Type: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
   :System.Enum
   Fields:
@@ -112,18 +143,35 @@ Struct GarrysMod.SPECIAL: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFi
     GarrysMod.SPECIAL GLOB = 0 : Public, Static, Literal, HasDefault
     GarrysMod.SPECIAL ENV = 1 : Public, Static, Literal, HasDefault
     GarrysMod.SPECIAL REG = 2 : Public, Static, Literal, HasDefault
-Struct GarrysMod.Lua.Index: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
-  :System.Enum
-  Fields:
-    Int32 value__ : Public, SpecialName, RTSpecialName
-    GarrysMod.Lua.Index REGISTRY = -10000 : Public, Static, Literal, HasDefault
-    GarrysMod.Lua.Index ENVIRONMENT = -10001 : Public, Static, Literal, HasDefault
-    GarrysMod.Lua.Index GLOBAL = -10002 : Public, Static, Literal, HasDefault
 Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Fields:
+    GarrysMod.GLuaWriter glua_dump_writer : Public, Static
   Methods:
+    Lock(IntPtr): PrivateScope, Public, Static, HideBySig
+    Unlock(IntPtr): PrivateScope, Public, Static, HideBySig
+    PushBool(IntPtr, Boolean(HasFieldMarshal)): PrivateScope, Public, Static, HideBySig
+    PushCClosure(IntPtr, Void*, Int32): PrivateScope, Public, Static, HideBySig
+    PushUserdata(IntPtr, Void*): PrivateScope, Public, Static, HideBySig
+    ReferenceCreate(IntPtr): PrivateScope, Public, Static, HideBySig
+    ReferenceFree(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
+    ReferencePush(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
+    PushSpecial(IntPtr, SPECIAL): PrivateScope, Public, Static, HideBySig
+    IsType(IntPtr, Int32, Type): PrivateScope, Public, Static, HideBySig
+    IsType(IntPtr, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    GetType(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
+    CreateMetaTableType(IntPtr, String, Int32): PrivateScope, Public, Static, HideBySig
+    CheckString(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
     CheckNumber(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
     EmptyGFunc(IntPtr): PrivateScope, Public, Static, HideBySig
+    glua_pushboolean(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
+    glua_pushlightuserdata(IntPtr, Void*): PrivateScope, Public, Static, HideBySig
+    glua_pushthread(IntPtr): PrivateScope, Public, Static, HideBySig
+    glua_gettable(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
+    glua_getfield(IntPtr, Int32, String): PrivateScope, Public, Static, HideBySig
+    glua_rawget(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
+    glua_rawgeti(IntPtr, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    glua_createtable(IntPtr, Int32, Int32): PrivateScope, Public, Static, HideBySig
     glua_newuserdata(IntPtr, UInt32): PrivateScope, Public, Static, HideBySig
     glua_getmetatable(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
     glua_getfenv(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
@@ -137,6 +185,7 @@ Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     glua_pcall(IntPtr, Int32, Int32, Int32): PrivateScope, Public, Static, HideBySig
     glua_cpcall(IntPtr, IntPtr, Void*): PrivateScope, Public, Static, HideBySig
     glua_load(IntPtr, IntPtr, Void*, String): PrivateScope, Public, Static, HideBySig
+    glua_dump(IntPtr, IntPtr): PrivateScope, Public, Static, HideBySig
     glua_dump(IntPtr, IntPtr, Void*): PrivateScope, Public, Static, HideBySig
     glua_yield(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
     glua_status(IntPtr): PrivateScope, Public, Static, HideBySig
@@ -158,6 +207,8 @@ Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     glua_gethookcount(IntPtr): PrivateScope, Public, Static, HideBySig
     IsClient(IntPtr): PrivateScope, Public, Static, HideBySig
     IsServer(IntPtr): PrivateScope, Public, Static, HideBySig
+    GetLuaState(IntPtr): PrivateScope, Public, Static, HideBySig
+    AtPanic(IntPtr, GFunc): PrivateScope, Public, Static, HideBySig
     IsMenu(IntPtr): PrivateScope, Public, Static, HideBySig
     Openlibs(IntPtr): PrivateScope, Public, Static, HideBySig
     Shutdown(IntPtr): PrivateScope, Public, Static, HideBySig
@@ -198,17 +249,7 @@ Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     PushString(IntPtr, String): PrivateScope, Public, Static, HideBySig
     PushString(IntPtr, String, UInt32): PrivateScope, Public, Static, HideBySig
     PushNumber(IntPtr, Double): PrivateScope, Public, Static, HideBySig
-    PushBool(IntPtr, Boolean(HasFieldMarshal)): PrivateScope, Public, Static, HideBySig
-    PushCClosure(IntPtr, Void*, Int32): PrivateScope, Public, Static, HideBySig
-    PushUserdata(IntPtr, Void*): PrivateScope, Public, Static, HideBySig
-    ReferenceCreate(IntPtr): PrivateScope, Public, Static, HideBySig
-    ReferenceFree(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
-    ReferencePush(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
-    PushSpecial(IntPtr, SPECIAL): PrivateScope, Public, Static, HideBySig
-    IsType(IntPtr, Int32, Int32): PrivateScope, Public, Static, HideBySig
-    GetType(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
-    CreateMetaTableType(IntPtr, String, Int32): PrivateScope, Public, Static, HideBySig
-    CheckString(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
+    GetTypeName(IntPtr, Type): PrivateScope, Public, Static, HideBySig
     GetTypeName(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
     GetTypeName(IntPtr): PrivateScope, Public, Static, HideBySig
     CreateLib(IntPtr, Type, Boolean(HasFieldMarshal)): PrivateScope, Public, Static, HideBySig
@@ -216,6 +257,13 @@ Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     CreateType(IntPtr, Type, Boolean(HasFieldMarshal)): PrivateScope, Public, Static, HideBySig
     CreateType(IntPtr, Type): PrivateScope, Public, Static, HideBySig
     gluaL_register(IntPtr, String, luaL_Reg*): PrivateScope, Public, Static, HideBySig
+    gluaopen_base(IntPtr): PrivateScope, Public, Static, HideBySig
+    gluaopen_debug(IntPtr): PrivateScope, Public, Static, HideBySig
+    gluaopen_math(IntPtr): PrivateScope, Public, Static, HideBySig
+    gluaopen_os(IntPtr): PrivateScope, Public, Static, HideBySig
+    gluaopen_package(IntPtr): PrivateScope, Public, Static, HideBySig
+    gluaopen_string(IntPtr): PrivateScope, Public, Static, HideBySig
+    gluaopen_table(IntPtr): PrivateScope, Public, Static, HideBySig
     gluaL_getmetafield(IntPtr, Int32, String): PrivateScope, Public, Static, HideBySig
     gluaL_callmeta(IntPtr, Int32, String): PrivateScope, Public, Static, HideBySig
     gluaL_typerror(IntPtr, Int32, String): PrivateScope, Public, Static, HideBySig
@@ -286,19 +334,12 @@ Class GarrysMod.GLua: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     glua_pushvfstring(IntPtr, String, SByte*): PrivateScope, Public, Static, HideBySig
     glua_pushfstring(IntPtr, String, Object[]): PrivateScope, Public, Static, HideBySig
     glua_pushcclosure(IntPtr, IntPtr, Int32): PrivateScope, Public, Static, HideBySig
-    glua_pushboolean(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
-    glua_pushlightuserdata(IntPtr, Void*): PrivateScope, Public, Static, HideBySig
-    glua_pushthread(IntPtr): PrivateScope, Public, Static, HideBySig
-    glua_gettable(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
-    glua_getfield(IntPtr, Int32, String): PrivateScope, Public, Static, HideBySig
-    glua_rawget(IntPtr, Int32): PrivateScope, Public, Static, HideBySig
-    glua_rawgeti(IntPtr, Int32, Int32): PrivateScope, Public, Static, HideBySig
-    glua_createtable(IntPtr, Int32, Int32): PrivateScope, Public, Static, HideBySig
 Class GarrysMod.GLua+Utils: AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
-  Fields:
-    Boolean PrintToConsole : Public, Static
   Methods:
+    HookOutput(GSpewOutputFunc): PrivateScope, Public, Static, HideBySig
+    UnhookOutput(): PrivateScope, Public, Static, HideBySig
+    IsOutputHooked(): PrivateScope, Public, Static, HideBySig
     print(IntPtr, String, Object[]): PrivateScope, Public, Static, HideBySig
     print(IntPtr, String, Boolean(HasFieldMarshal)): PrivateScope, Public, Static, HideBySig
     print(IntPtr, String): PrivateScope, Public, Static, HideBySig
