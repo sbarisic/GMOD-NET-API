@@ -25,7 +25,6 @@
 #include <Windows.h>
 
 // Headers
-#include "ManagedWrapper.h"
 #include "GISurface.h"
 #include "GSteamAPI.h"
 #include "gColor.h"
@@ -33,9 +32,10 @@
 
 // Lua
 extern "C" {
-	#include "lua.h"
-	#include "lualib.h"
-	#include "lauxlib.h"
+	#include <luaconf.h>
+	#include <lua.h>
+	#include <lualib.h>
+	#include <lauxlib.h>
 }
 #include <LuaExtended.h>
 
@@ -45,11 +45,13 @@ extern "C" {
 #define not !
 #define params ...
 
-#define CSTR(N) const char* N = (const char*)(void*)Marshal::StringToHGlobalAnsi( STR_##N )
-//#define DSTR(N) Marshal::FreeHGlobal(System::IntPtr((void*) N ))
-#define DSTR(N) free((void*) N )
+#define CSTR(N) const char* N = (const char*)Marshal::StringToHGlobalAnsi( STR_##N ).ToPointer()
+#define DSTR(N) Marshal::FreeHGlobal(IntPtr((void*) N ))
+//#define DSTR(N) free((void*) N )
 #define RSTR(N) gcnew String( N )
 #define ToLuaState(LL) ((lua_State*)LL.ToPointer())
 #define ToLuaStateExt(LL) ((ILuaExtended*)ToLuaState(LL)->luabase)
+#define GetFuncPointer(F) (Marshal::GetFunctionPointerForDelegate( F ).ToPointer())
+#define GetFuncPointerC(C, F) ((C)GetFuncPointer(F))
 
 #undef STDAFX_H

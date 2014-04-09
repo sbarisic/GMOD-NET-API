@@ -1,14 +1,9 @@
 #include "stdafx.h"
+#include "ManagedWrapper.h"
 
 using namespace GarrysMod;
 using namespace GarrysMod::Lua;
 using namespace System::Collections::Generic;
-
-typedef void (*NewSpewOutFunc)(SpewType_t T, const tchar* S, int R, int G, int B, int A);
-static DWORD SpewThreadID;
-static SpewOutputFunc_t OldSpewOutputFunc = NULL;
-static NewSpewOutFunc NewSpewOutputFunc = NULL;
-static int InsideSpew = 0;
 
 static SpewRetval_t SpewOut(SpewType_t spewType, const tchar* pMsg) {
 	if (GetCurrentThreadId() != SpewThreadID or !pMsg) return SPEW_CONTINUE;
@@ -23,14 +18,13 @@ static SpewRetval_t SpewOut(SpewType_t spewType, const tchar* pMsg) {
 	return OldSpewOutputFunc(spewType, pMsg);
 }
 
-int glua_dump_writer_native(lua_State *L, const void* p, size_t sz, void* ud);
-
 namespace GarrysMod {
 	public ref class GLua {
 	private:
 		static bool SkipMetamethods = false; // Ugly hack
 
 	public:
+		// ============== UTILS ==
 		ref class Utils {
 		private:
 			static GSpewOutputFunc^ SpewOutputFunction = nullptr;
@@ -97,6 +91,7 @@ namespace GarrysMod {
 			}
 		};
 
+		// ============== KEEPALIVE ==
 		ref class Keepalive {
 		private:
 			static Dictionary<String^, Object^> ^KADict = gcnew Dictionary<String^, Object^>();
@@ -124,6 +119,7 @@ namespace GarrysMod {
 			}
 		};
 
+		// ============== FUNCTIONS ===================================================================================
 		static String ^GetTypeName(IntPtr B){
 			return GLua::GetTypeName(B, (Lua::Type)GLua::GetType(B, 1));
 		}
@@ -190,10 +186,14 @@ namespace GarrysMod {
 #undef WRAPPERS_INCLUDE
 
 		static GLuaWriter ^glua_dump_writer = nullptr;
+		static DumpResult glua_dump(IntPtr LPtr, GLuaWriter ^GLW) {
+			glua_dump_writer = GLW;
+			return glua_dump(LPtr);
+		}
 
-		static int glua_dump(IntPtr LPtr, IntPtr Data) {
-			return lua_dump(ToLuaState(LPtr), (lua_Writer)Marshal::GetFunctionPointerForDelegate(glua_dump_writer).ToPointer(),
-				Data.ToPointer());
+		static DumpResult glua_dump(IntPtr LPtr) {
+			if (glua_dump_writer == nullptr) return DumpResult::NO_DUMP_FUNCTION;
+			return (DumpResult)lua_dump(ToLuaState(LPtr), GetFuncPointerC(lua_Writer, glua_dump_writer), NULL);
 		}
 
 		static bool IsClient(IntPtr L) {
@@ -212,7 +212,7 @@ namespace GarrysMod {
 			lua_atpanic(ToLuaState(L), ToCFunc(F));
 		}
 
-		static bool IsMenu(IntPtr L) {
+		static bool IsMenu(IntPtr L) { // TODO: Redo this?
 			ILuaExtended* Le = (ILuaExtended*)ToLuaState(L);
 			lua_getfield(ToLuaState(L), LUA_GLOBALSINDEX, "render");
 			bool Render = lua_type(ToLuaState(L), -1) == (int)Lua::Type::NIL;

@@ -13,10 +13,12 @@ namespace GarrysMod {
 
 	[UnmanagedFunctionPointer(CallingConvention::Cdecl)]
 	public delegate int GFunc(IntPtr L);
+
 	[UnmanagedFunctionPointer(CallingConvention::Cdecl)]
 	public delegate void GSpewOutputFunc(int T, String^ Str, int R, int G, int B, int A);
+
 	[UnmanagedFunctionPointer(CallingConvention::Cdecl)]
-	public delegate int GLuaWriter(IntPtr L, String^ Str, unsigned int Sz, IntPtr Ud);
+	public delegate int GLuaWriter(IntPtr L, IntPtr Ptr, size_t Size, IntPtr Userdata);
 
 	namespace Lua {
 		public enum class Index : int {

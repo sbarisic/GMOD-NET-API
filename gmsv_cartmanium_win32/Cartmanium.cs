@@ -14,7 +14,8 @@ namespace gmsv_cartmanium_win32 {
 	public unsafe class Cartmanium {
 		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
 		public static int Open(IntPtr L) {
-			Kernel32.AllocConsole(); Console.Title = "Garry's Mod";
+			Kernel32.AllocConsole();
+			Console.Title = "Garry's Mod";
 			return Module.Open(L);
 		}
 
@@ -60,11 +61,13 @@ namespace gmsv_cartmanium_win32 {
 			GLua.CreateType(L, typeof(Cart));
 
 			GLua.GetTableVal(L, "_G", "SpewMsg");
-			GLua.glua_dump_writer = (LPtr, Dta, Size, Ud) => {
-				Console.WriteLine("Wee! Works!\n>> \"{0}\"", Dta);
+
+			GLua.glua_dump(L, (LPtr, Dump, Size, UData) => { // TODO: Fix, what is this shit.
+				char* DPtr = (char*)Dump.ToPointer();
+				string S = new string(DPtr);
+				Console.WriteLine(S);
 				return 0;
-			};
-			Console.WriteLine(GLua.glua_dump(L, IntPtr.Zero));
+			});
 
 			GLua.Utils.print(L, string.Format("Test with ManagedWrapper v{0} loaded", ManagedWrapper.VERSION), false);
 			return 0;
