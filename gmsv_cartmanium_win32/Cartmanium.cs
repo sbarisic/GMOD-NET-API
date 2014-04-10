@@ -4,6 +4,7 @@ using GarrysMod.Utilities;
 using System.Runtime.InteropServices;
 using System;
 using System.Text;
+using ImpromptuInterface;
 
 namespace gmsv_cartmanium_win32 {
 	public unsafe class Kernel32 {
@@ -14,65 +15,70 @@ namespace gmsv_cartmanium_win32 {
 	public unsafe class Cartmanium {
 		[RGiesecke.DllExport.DllExport("gmod13_open", CallingConvention.Cdecl)]
 		public static int Open(IntPtr L) {
+			L.glua_settop(0); // Remove weird constants
+			L.PushGFunction(GLua.EmptyGFunc);
+			L.PushGFunction(GLua.EmptyGFunc);
+			L.PushGFunction(GLua.EmptyGFunc);
+			L.PushGFunction(GLua.EmptyGFunc);
+			L.PushGFunction(GLua.EmptyGFunc);
+
 			Kernel32.AllocConsole();
 			Console.Title = "Garry's Mod";
-			return Module.Open(L);
-		}
 
-		[RGiesecke.DllExport.DllExport("gmod13_close", CallingConvention.Cdecl)]
-		public static int Close(IntPtr L) {
-			return Module.Close(L);
-		}
-	}
+			GLuaDynamic _GD = new GLuaDynamic(L);
+			dynamic _G = _GD;
 
-	public unsafe static class Module {
-		public static int Open(IntPtr L) {
-			GLua.AtPanic(L, (I) => {
-				throw new Exception(GLua.CheckString(I, -1));
-				Environment.Exit(1);
-			});
+			_GD.Dbg();
+			L.CreateType(typeof(Cart));
 
-			GLua.Utils.DoString(L, "_G.SpewMsg = function() end");
+			_GD.Dbg();
+			GLua.Utils.DoString(L, "TESTVAR = 256; function TESTFUNC(...) Cart.Console(...) print(...) end");
+
+			_GD.Dbg();
+			_G.TESTFUNC("Hello from DLR! ", 42);
+			_G.TESTFUNC(_G.TESTVAR);
+
+			L.SetGlobalTableGFunc("_G", "SpewMsg", GLua.EmptyGFunc);
 
 			bool InHook = false;
 			GLua.Utils.HookOutput(new GSpewOutputFunc((int T, string Str, int R, int G, int B, int A) => {
-				if (InHook || L == IntPtr.Zero)
+				if (InHook)
 					return;
 				InHook = true;
 
-				int StackSize = GLua.glua_gettop(L);
-
-				GLua.Lock(L);
-				GLua.PushSpecial(L, SPECIAL.GLOB);
-				GLua.glua_getfield(L, -1, "SpewMsg");
-				GLua.glua_pushinteger(L, R);
-				GLua.glua_pushinteger(L, G);
-				GLua.glua_pushinteger(L, B);
-				GLua.glua_pushinteger(L, A);
-				GLua.glua_pushstring(L, Str);
-				if (GLua.PCall(L, 5, 0, 0) != 0)
-					GLua.Utils.print(L, GLua.CheckString(L, -1));
-
-				GLua.Pop(L, GLua.glua_gettop(L) - StackSize);
-				GLua.Unlock(L);
+				L.Locked(() => {
+					L.PushSpecial(SPECIAL.GLOB);
+					L.glua_getfield(-1, "SpewMsg");
+					L.glua_pushinteger(R);
+					L.glua_pushinteger(G);
+					L.glua_pushinteger(B);
+					L.glua_pushinteger(A);
+					L.glua_pushstring(Str);
+					if (L.PCall(5, 0, 0) != 0)
+						GLua.Utils.print(L, L.CheckString(-1));
+				});
 				InHook = false;
 			}));
 
-			GLua.CreateType(L, typeof(Cart));
-
-			GLua.GetTableVal(L, "_G", "SpewMsg");
-
-			GLua.glua_dump(L, (LPtr, Dump, Size, UData) => { // TODO: Fix, what is this shit.
-				char* DPtr = (char*)Dump.ToPointer();
-				string S = new string(DPtr);
-				Console.WriteLine(S);
-				return 0;
+			L.Locked(() => {
+				if (L.gluaL_loadstring("function TEST_DUMP() print(\"Hello universe!\") end") != 0)
+					Console.WriteLine(L.CheckString(-1));
+				if (L.glua_pcall(0, 0, 0) != 0)
+					Console.WriteLine(L.CheckString(-1));
 			});
+
+			/*L.GetTableVal("_G", "TEST_DUMP");
+			L.glua_dump((LPtr, Dump, Size, UData) => { // TODO: Fix, what is this shit.
+				string Str = Marshal.PtrToStringAnsi(Dump, (int)Size);
+				Console.WriteLine("{0} >> \"{1}\"", Size, Str);
+				return 0;
+			});*/
 
 			GLua.Utils.print(L, string.Format("Test with ManagedWrapper v{0} loaded", ManagedWrapper.VERSION), false);
 			return 0;
 		}
 
+		[RGiesecke.DllExport.DllExport("gmod13_close", CallingConvention.Cdecl)]
 		public static int Close(IntPtr L) {
 			GLua.Utils.UnhookOutput();
 			return 0;
@@ -81,7 +87,7 @@ namespace gmsv_cartmanium_win32 {
 
 	public unsafe static class Cart {
 		public static int __tostring(IntPtr L) {
-			GLua.PushString(L, "IT'S A MOTHERFUCKING CART TABLE!");
+			L.PushString("IT'S A MOTHERFUCKING CART TABLE!");
 			return 1;
 		}
 

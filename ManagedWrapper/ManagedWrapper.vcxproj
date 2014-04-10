@@ -115,6 +115,7 @@
     <ClInclude Include="gColor.h" />
     <ClInclude Include="gISurface.h" />
     <ClInclude Include="GLua.h" />
+    <ClInclude Include="GLuaDynamic.h" />
     <ClInclude Include="gSteamAPI.h" />
     <ClInclude Include="ManagedWrapper.h" />
     <ClInclude Include="resource.h" />
@@ -124,6 +125,7 @@
     <ClCompile Include="gColor.cpp" />
     <ClCompile Include="gISurface.cpp" />
     <ClCompile Include="GLua.cpp" />
+    <ClCompile Include="GLuaDynamic.cpp" />
     <ClCompile Include="gSteamAPI.cpp" />
     <ClCompile Include="ManagedWrapper.cpp" />
     <ClCompile Include="stdafx.cpp">

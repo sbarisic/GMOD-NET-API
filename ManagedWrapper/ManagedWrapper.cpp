@@ -1,11 +1,16 @@
+#ifndef MANAGED_WRAPPER_DISABLE
+
 #include "stdafx.h"
 #include "ManagedWrapper.h"
 
 using namespace GarrysMod;
 using namespace GarrysMod::Lua;
 using namespace System::Collections::Generic;
+using namespace System::Dynamic;
 
-static SpewRetval_t SpewOut(SpewType_t spewType, const tchar* pMsg) {
+#define __static static
+
+__static SpewRetval_t SpewOut(SpewType_t spewType, const tchar* pMsg) {
 	if (GetCurrentThreadId() != SpewThreadID or !pMsg) return SPEW_CONTINUE;
 
 	if (NewSpewOutputFunc != NULL and not InsideSpew) {
@@ -18,20 +23,24 @@ static SpewRetval_t SpewOut(SpewType_t spewType, const tchar* pMsg) {
 	return OldSpewOutputFunc(spewType, pMsg);
 }
 
+#define STACK_DEBUG
+
 namespace GarrysMod {
-	public ref class GLua {
+	extending public ref class GLua {
 	private:
-		static bool SkipMetamethods = false; // Ugly hack
+		__static bool SkipMetamethods = false; // Ugly hack
+		static Stack<int> ^glua_stack_counts = gcnew Stack<int>();
+		static GLuaWriter ^glua_dump_writer = nullptr;
 
 	public:
 		// ============== UTILS ==
 		ref class Utils {
 		private:
-			static GSpewOutputFunc^ SpewOutputFunction = nullptr;
-			static bool PrintToConsole = false;
+			__static GSpewOutputFunc^ SpewOutputFunction = nullptr;
+			__static bool PrintToConsole = false;
 
 		public:
-			static void HookOutput(GSpewOutputFunc^ SpewOutFunc) {
+			__static void HookOutput(GSpewOutputFunc^ SpewOutFunc) {
 				if (OldSpewOutputFunc != NULL) throw gcnew Exception("SpewOutputFunc alreay hooked!");
 
 				SpewOutputFunction = SpewOutFunc;
@@ -42,7 +51,7 @@ namespace GarrysMod {
 				SpewOutputFunc(SpewOut);
 			}
 
-			static void UnhookOutput() {
+			__static void UnhookOutput() {
 				if (OldSpewOutputFunc == NULL) throw gcnew Exception("Old SpewOutputFunc is NULL");
 
 				SpewOutputFunc(OldSpewOutputFunc);
@@ -52,11 +61,11 @@ namespace GarrysMod {
 				SpewOutputFunction = nullptr;
 			}
 
-			static bool IsOutputHooked() {
+			__static bool IsOutputHooked() {
 				return OldSpewOutputFunc != NULL;
 			}
 
-			static void print(IntPtr L, String ^S) {
+			__static void print(LuaStateType L, String ^S) {
 				GLua::GetTableVal(L, "print");
 				GLua::PushString(L, S);
 				GLua::Call(L, 1, 0);
@@ -65,86 +74,80 @@ namespace GarrysMod {
 					Console::WriteLine(S);
 			}
 
-			static void print(IntPtr L, String ^S, Boolean ToConsole) {
+			__static void print(LuaStateType L, String ^S, Boolean ToConsole) {
 				auto oPTC = Utils::PrintToConsole; Utils::PrintToConsole = ToConsole;
 				Utils::print(L, S);
 				Utils::PrintToConsole = oPTC;
 			}
 
-			static void print(IntPtr L, String ^S, params array<Object^>^ VArgs) {
+			__static void print(LuaStateType L, String ^S, params array<Object^>^ VArgs) {
 				Utils::print(L, String::Format(S, VArgs));
 			}
 
-			static int DoString(IntPtr L, String ^STR_S) {
+			__static int DoString(LuaStateType L, String ^STR_S) {
 				CSTR(S);
 				int R = luaL_dostring(ToLuaState(L), S);
 				DSTR(S);
 				return R;
-			}
-
-			static ILuaExtended* ToExtended(ILuaBase* B) {
-				return (ILuaExtended*)B;
-			}
-
-			static ILuaExtended* ToExtended(IntPtr L) {
-				return (ILuaExtended*)ToLuaState(L)->luabase;
 			}
 		};
 
 		// ============== KEEPALIVE ==
 		ref class Keepalive {
 		private:
-			static Dictionary<String^, Object^> ^KADict = gcnew Dictionary<String^, Object^>();
+			__static Dictionary<String^, Object^> ^KADict = gcnew Dictionary<String^, Object^>();
 
-			static bool CheckName(String^ Name) {
+			__static bool CheckName(String^ Name) {
 				if (Keepalive::KADict->ContainsKey(Name))
 					Keepalive::Remove(Name);
 				return true;
 			}
 		public:
-			static void Remove(String^ Name) {
+			__static void Remove(String^ Name) {
 				if (!Keepalive::KADict->ContainsKey(Name))
 					return;
 				Keepalive::KADict->Remove(Name);
 			}
 
-			static void AddList(String^ Name, List<GFunc^>^ GFuncList) {
+			__static void AddList(String^ Name, List<GFunc^>^ GFuncList) {
 				if (Keepalive::CheckName(Name))
 					Keepalive::KADict->Add(Name, GFuncList);
 			}
 
-			static void AddObject(String^ Name, Object^ Obj) {
+			__static void AddObject(String^ Name, Object^ Obj) {
 				if (Keepalive::CheckName(Name))
 					Keepalive::KADict->Add(Name, Obj);
 			}
 		};
 
+#undef __static
+#define __static extending static
 		// ============== FUNCTIONS ===================================================================================
-		static String ^GetTypeName(IntPtr B){
+		__static String ^GetTypeName(LuaStateType B){
 			return GLua::GetTypeName(B, (Lua::Type)GLua::GetType(B, 1));
 		}
 
-		static String ^GetTypeName(IntPtr B, int Pos){
+		__static String ^GetTypeName(LuaStateType B, int Pos){
 			return GLua::GetTypeName(B, GLua::GetType(B, Pos));
 		}
 
-		static List<GFunc^> ^CreateLib(IntPtr L, System::Type ^Lib) {
+		__static List<GFunc^> ^CreateLib(LuaStateType L, System::Type ^Lib) {
 			return CreateLib(L, Lib, true);
 		}
 
-		static List<GFunc^> ^CreateLib(IntPtr L, System::Type ^Lib, bool Keepalive) {
+		__static List<GFunc^> ^CreateLib(LuaStateType L, System::Type ^Lib, bool Keepalive) {
 			auto RetL = gcnew List<GFunc^>();
 			auto Methods = Lib->GetMethods();
-			String ^TableName = Lib->Name;
-			GLua::CreateGlobalTable(L, TableName);
+			String ^TableName = Lib->Name;											STACK_DEBUG
+			GLua::CreateGlobalTable(L, TableName);									STACK_DEBUG
 			auto GFuncType = (gcnew GFunc(GLua::EmptyGFunc))->GetType();
 			for each (auto MInfo in Methods) {
 				if (MInfo->ReturnType == (1).GetType()) {
 					auto Params = MInfo->GetParameters();
-					if (Params->Length == 1 && Params[0]->ParameterType->FullName == "System.IntPtr") {
+					if (Params->Length == 1 && Params[0]->ParameterType->FullName == "System.IntPtr") {		STACK_DEBUG
 						GFunc ^Func = (GFunc^)Delegate::CreateDelegate(GFuncType, MInfo);
 						RetL->Add(Func);
-						if (SkipMetamethods && MInfo->Name->StartsWith("__")) {
+						if (SkipMetamethods && MInfo->Name->StartsWith("__")) {		STACK_DEBUG
 							PushSpecial(L, GarrysMod::SPECIAL::GLOB);
 							PushString(L, Lib->Name);
 							GetTable(L, -2);
@@ -152,11 +155,10 @@ namespace GarrysMod {
 								glua_createtable(L, 0, 0);
 							PushGFunction(L, Func);
 							glua_setfield(L, -2, MInfo->Name);
-							glua_setmetatable(L, -2);
-							GLua::Pop(L, 1);
+							glua_setmetatable(L, -1);				STACK_DEBUG
 							continue;
-						} 
-						GLua::SetGlobalTableGFunc(L, TableName, MInfo->Name, Func);
+						} STACK_DEBUG
+						GLua::SetGlobalTableGFunc(L, TableName, MInfo->Name, Func); STACK_DEBUG
 					}
 				}
 			}
@@ -168,11 +170,11 @@ namespace GarrysMod {
 		}
 
 		// Ugly hack begin.
-		static List<GFunc^> ^CreateType(IntPtr L, System::Type ^Typ) {
+		__static List<GFunc^> ^CreateType(LuaStateType L, System::Type ^Typ) {
 			return CreateType(L, Typ, true);
 		}
 
-		static List<GFunc^> ^CreateType(IntPtr L, System::Type ^Typ, bool Keepalive) {
+		__static List<GFunc^> ^CreateType(LuaStateType L, System::Type ^Typ, bool Keepalive) {
 			SkipMetamethods = true;
 			List<GFunc^> ^GFL = CreateLib(L, Typ, Keepalive);
 			SkipMetamethods = false;
@@ -185,34 +187,54 @@ namespace GarrysMod {
 #include "Wrappers.cpp"
 #undef WRAPPERS_INCLUDE
 
-		static GLuaWriter ^glua_dump_writer = nullptr;
-		static DumpResult glua_dump(IntPtr LPtr, GLuaWriter ^GLW) {
+		__static DumpResult glua_dump(LuaStateType LPtr, GLuaWriter ^GLW) { return glua_dump(LPtr, GLW, IntPtr::Zero); }
+		__static DumpResult glua_dump(LuaStateType LPtr, GLuaWriter ^GLW, IntPtr Userdata) {
 			glua_dump_writer = GLW;
-			return glua_dump(LPtr);
+			return glua_dump(LPtr, Userdata);
 		}
-
-		static DumpResult glua_dump(IntPtr LPtr) {
+		__static DumpResult glua_dump(LuaStateType LPtr) { return glua_dump(LPtr, IntPtr::Zero); }
+		__static DumpResult glua_dump(LuaStateType LPtr, IntPtr Userdata) {
 			if (glua_dump_writer == nullptr) return DumpResult::NO_DUMP_FUNCTION;
-			return (DumpResult)lua_dump(ToLuaState(LPtr), GetFuncPointerC(lua_Writer, glua_dump_writer), NULL);
+			return (DumpResult)lua_dump(ToLuaState(LPtr), GetFuncPointerC(lua_Writer, glua_dump_writer), Userdata.ToPointer());
 		}
 
-		static bool IsClient(IntPtr L) {
-			return Utils::ToExtended(L)->IsClient();
+		/// Pushes stack count
+		__static void PushStackCount(LuaStateType L) {
+			//glua_stack_counts->Push(glua_gettop(L));
 		}
 
-		static bool IsServer(IntPtr L) {
-			return Utils::ToExtended(L)->IsServer();
+		/// Restores stack count to last pushed count
+		__static void PopStackCount(LuaStateType L) {
+			/*int Cnt = lua_gettop(ToLuaState(L)) - glua_stack_counts->Pop();
+			if (Cnt <= 0) return;
+			Pop(L, -Cnt);*/
 		}
 
-		static IntPtr GetLuaState(IntPtr L) {
+		__static void Locked(LuaStateType L, LockedAction ^A) {
+			Lock(L);
+			PushStackCount(L);
+			A();
+			PopStackCount(L);
+			Unlock(L);
+		}
+
+		__static bool IsClient(LuaStateType L) {
+			return ToLuaStateExt(L)->IsClient();
+		}
+
+		__static bool IsServer(LuaStateType L) {
+			return ToLuaStateExt(L)->IsServer();
+		}
+
+		__static IntPtr GetLuaState(LuaStateType L) {
 			return IntPtr(((ILuaExtended*)ToLuaState(L)->luabase)->GetLuaState());
 		}
 
-		static void AtPanic(IntPtr L, GFunc ^F) {
+		__static void AtPanic(LuaStateType L, GFunc ^F) {
 			lua_atpanic(ToLuaState(L), ToCFunc(F));
 		}
 
-		static bool IsMenu(IntPtr L) { // TODO: Redo this?
+		__static bool IsMenu(LuaStateType L) { // TODO: Redo this?
 			ILuaExtended* Le = (ILuaExtended*)ToLuaState(L);
 			lua_getfield(ToLuaState(L), LUA_GLOBALSINDEX, "render");
 			bool Render = lua_type(ToLuaState(L), -1) == (int)Lua::Type::NIL;
@@ -225,250 +247,280 @@ namespace GarrysMod {
 			return false;
 		}
 
-		static void Openlibs(IntPtr L) {
+		__static void Openlibs(LuaStateType L) {
 			luaL_openlibs(ToLuaState(L));
 		}
 
-		static void Shutdown(IntPtr L) {
-			Utils::ToExtended(L)->Shutdown();
+		__static void Shutdown(LuaStateType L) {
+			ToLuaStateExt(L)->Shutdown();
 		}
 
-		static void PushCFunction(IntPtr L, void* F) {
+		__static void PushCFunction(LuaStateType L, void* F) {
 			ToLuaState(L)->luabase->PushCFunction((CFunc)F);
 		}
 
-		static void PushGFunction(IntPtr L, GFunc ^F) {
+		__static void PushGFunction(LuaStateType L, GFunc ^F) {
 			GLua::PushCFunction(L, ToCFunc(F));
 		}
 		
-		static void CreateGlobalTable(IntPtr L, String ^S) {
+		__static void CreateGlobalTable(LuaStateType L, String ^S) {
 			GLua::PushSpecial(L, GarrysMod::SPECIAL::GLOB);
 			GLua::PushString(L, S);
 			GLua::CreateTable(L);
 			GLua::SetTable(L, -3);
 		}
 
-		static void SetGlobalTableGFunc(IntPtr L, String ^TableName, String ^FunctionName, GFunc ^F) {
+		__static void SetGlobalTableGFunc(LuaStateType L, String ^TableName, String ^FunctionName, GFunc ^F) {
 			GLua::PushSpecial(L, GarrysMod::SPECIAL::GLOB);
 			GLua::PushString(L, TableName);
 			GLua::GetTable(L, -2);
 			GLua::PushString(L, FunctionName);
 			GLua::PushGFunction(L, F);
 			GLua::SetTable(L, -3);
+			GLua::Pop(L, -1);
 		}
 
-		static int Top(IntPtr L) {
+		__static int Top(LuaStateType L) {
 			return ToLuaState(L)->luabase->Top();
 		}
 
-		static void Push(IntPtr L, int StackPos) {
+		__static void Push(LuaStateType L, int StackPos) {
 			ToLuaState(L)->luabase->Push(StackPos);
 		}
 
-		static void Pop(IntPtr L, int Amount) {
+		__static void Pop(LuaStateType L, int Amount) {
+			if (Amount == 0) return;
 			ToLuaState(L)->luabase->Pop(Amount);
 		}
 
-		static void GetTable(IntPtr L, int StackPos) {
+		__static void GetTable(LuaStateType L, int StackPos) {
 			ToLuaState(L)->luabase->GetTable(StackPos);
 		}
 
-		static void GetField(IntPtr L, int iStackPos, String ^strName) {
+		__static void GetField(LuaStateType L, int iStackPos, String ^strName) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(strName);
 			ToLuaState(L)->luabase->GetField(iStackPos, str);
 			Marshal::FreeHGlobal(IntPtr((void*)str));
 		}
 
-		static void SetField(IntPtr L, int iStackPos, String ^strName) {
+		__static void SetField(LuaStateType L, int iStackPos, String ^strName) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(strName);
 			ToLuaState(L)->luabase->SetField(iStackPos, str);
 			Marshal::FreeHGlobal(IntPtr((void*)str));
 		}
 
-		static void CreateTable(IntPtr L) {
+		__static void CreateTable(LuaStateType L) {
 			ToLuaState(L)->luabase->CreateTable();
 		}
 
-		static void GetTableVal(IntPtr L, params array<String^> ^TableNames) {
+		__static void GetTableVal(LuaStateType L, params array<String^> ^TableNames) {
 			PushSpecial(L, GarrysMod::SPECIAL::GLOB);
-			for each (String ^Name in TableNames)
+			for each (String ^Name in TableNames) {
 				GetField(L, -1, Name);
+				glua_remove(L, -2);
+			}
 		}
 
-		static void SetTable(IntPtr L, int i) {
+		__static void SetTable(LuaStateType L, int i) {
 			ToLuaState(L)->luabase->SetTable(i);
 		}
 
-		static void SetMetaTable(IntPtr L, int i) {
+		__static void SetMetaTable(LuaStateType L, int i) {
 			ToLuaState(L)->luabase->SetMetaTable(i);
 		}
 
-		static bool GetMetaTable(IntPtr L, int i) {
+		__static bool GetMetaTable(LuaStateType L, int i) {
 			return ToLuaState(L)->luabase->GetMetaTable(i);
 		}
 
-		static void Call(IntPtr L, int iArgs, int iResults) {
+		__static void Call(LuaStateType L, int iArgs, int iResults) {
 			ToLuaState(L)->luabase->Call(iArgs, iResults);
 		}
 
-		static int PCall(IntPtr L, int iArgs, int iResults, int iErrorFunc) {
+		__static int PCall(LuaStateType L, int iArgs, int iResults, int iErrorFunc) {
 			return ToLuaState(L)->luabase->PCall(iArgs, iResults, iErrorFunc);
 		}
 
-		static int Equal(IntPtr L, int iA, int iB) {
+		__static int Equal(LuaStateType L, int iA, int iB) {
 			return ToLuaState(L)->luabase->Equal(iA, iB);
 		}
 
-		static int RawEqual(IntPtr L, int iA, int iB) {
+		__static int RawEqual(LuaStateType L, int iA, int iB) {
 			return ToLuaState(L)->luabase->RawEqual(iA, iB);
 		}
 
-		static void Insert(IntPtr L, int iStackPos) {
+		__static void Insert(LuaStateType L, int iStackPos) {
 			ToLuaState(L)->luabase->Insert(iStackPos);
 		}
 
-		static void Remove(IntPtr L, int iStackPos) {
+		__static void Remove(LuaStateType L, int iStackPos) {
 			ToLuaState(L)->luabase->Remove(iStackPos);
 		}
 
-		static int Next(IntPtr L, int iStackPos) {
+		__static int Next(LuaStateType L, int iStackPos) {
 			return ToLuaState(L)->luabase->Next(iStackPos);
 		}
 
-		static void* NewUserdata(IntPtr L, unsigned int iSize) {
+		__static void* NewUserdata(LuaStateType L, unsigned int iSize) {
 			return ToLuaState(L)->luabase->NewUserdata(iSize);
 		}
 
-		static void ThrowError(IntPtr L, String ^strError) {
+		__static void ThrowError(LuaStateType L, String ^strError) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(strError);
 			ToLuaState(L)->luabase->ThrowError(str);
 			Marshal::FreeHGlobal(IntPtr((void*)str));
 		}
 
-		static void CheckType(IntPtr L, int iStackPos, int iType) {
+		__static void CheckType(LuaStateType L, int iStackPos, int iType) {
 			ToLuaState(L)->luabase->CheckType(iStackPos, iType);
 		}
 
-		static void ArgError(IntPtr L, int iArgNum, String ^strMessage) {
+		__static void ArgError(LuaStateType L, int iArgNum, String ^strMessage) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(strMessage);
 			ToLuaState(L)->luabase->ArgError(iArgNum, str);
 			Marshal::FreeHGlobal(IntPtr((void*)str));
 		}
 
-		static void RawGet(IntPtr L, int iStackPos) {
+		__static void RawGet(LuaStateType L, int iStackPos) {
 			ToLuaState(L)->luabase->RawGet(iStackPos);
 		}
 
-		static void RawSet(IntPtr L, int iStackPos) {
+		__static void RawSet(LuaStateType L, int iStackPos) {
 			ToLuaState(L)->luabase->RawSet(iStackPos);
 		}
 
-		static String^ GetString(IntPtr L, int iStackPos, unsigned int* iOutLen) {
+		__static String^ GetString(LuaStateType L, int iStackPos, unsigned int* iOutLen) {
 			return gcnew String(ToLuaState(L)->luabase->GetString(iStackPos, iOutLen));
 		}
 
-		static double GetNumber(IntPtr L, int iStackPos) {
+		__static double GetNumber(LuaStateType L, int iStackPos) {
 			return ToLuaState(L)->luabase->GetNumber(iStackPos);
 		}
 
-		static bool GetBool(IntPtr L, int iStackPos) {
+		__static bool GetBool(LuaStateType L, int iStackPos) {
 			return ToLuaState(L)->luabase->GetBool(iStackPos);
 		}
 
-		static void* GetCFunction(IntPtr L, int iStackPos) {
+		__static void* GetCFunction(LuaStateType L, int iStackPos) {
 			return ToLuaState(L)->luabase->GetCFunction(iStackPos);
 		}
 
-		static void* GetUserdata(IntPtr L, int iStackPos) {
+		__static void* GetUserdata(LuaStateType L, int iStackPos) {
 			return ToLuaState(L)->luabase->GetUserdata(iStackPos);
 		}
 
-		static void PushNil(IntPtr L) {
+		__static void PushNil(LuaStateType L) {
 			ToLuaState(L)->luabase->PushNil();
 		}
 
-		static void PushString(IntPtr L, String ^val, unsigned int iLen) {
+		__static void PushString(LuaStateType L, String ^val, unsigned int iLen) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(val);
 			ToLuaState(L)->luabase->PushString(str, iLen);
 			Marshal::FreeHGlobal(IntPtr((void*)str));
 		}
 
-		static void PushString(IntPtr L, String ^val) {
+		__static void PushString(LuaStateType L, String ^val) {
 			GLua::PushString(L, val, 0);
 		}
 		
-		static void PushNumber(IntPtr L, double val) {
+		__static void PushNumber(LuaStateType L, double val) {
 			ToLuaState(L)->luabase->PushNumber(val);
 		}
 
-		static void Lock(IntPtr L) {
+#define IsOfType(O, T) O->GetType() == T::typeid
+		__static void Push(LuaStateType L, Object ^O) {
+			if (IsOfType(O, String))
+				PushString(L, (String^)O);
+			else if (IsOfType(O, int))
+				lua_pushinteger(ToLuaState(L), (int)O);
+		}
+
+		__static Object ^Get(LuaStateType L, int Pos) {
+			if (IsType(L, Pos, GType::STRING))
+				return GLua::glua_tostring(L, Pos);
+			else if (IsType(L, Pos, GType::NUMBER))
+				return GLua::glua_tonumber(L, Pos);
+			else if (IsType(L, Pos, GType::NIL))
+				return nullptr;
+			else if (IsType(L, Pos, GType::TABLE))
+				throw gcnew NotImplementedException("TODO: Pop table from stack?");
+			return nullptr;
+		}
+#undef IsOfType
+
+		__static void Lock(LuaStateType L) {
 			ToLuaStateExt(L)->ThreadLock();
 		}
 
-		static void Unlock(IntPtr L) {
+		__static void Unlock(LuaStateType L) {
 			ToLuaStateExt(L)->ThreadUnlock();
 		}
 
-		static void PushBool(IntPtr L, bool val) {
+		__static void PushBool(LuaStateType L, bool val) {
 			ToLuaState(L)->luabase->PushBool(val);
 		}
 
-		static void PushCClosure(IntPtr L, void* val, int iVars) {
+		__static void PushCClosure(LuaStateType L, void* val, int iVars) {
 			ToLuaState(L)->luabase->PushCClosure((CFunc)val, iVars);
 		}
 
-		static void PushUserdata(IntPtr L, void* UData) {
+		__static void PushUserdata(LuaStateType L, void* UData) {
 			ToLuaState(L)->luabase->PushUserdata(UData);
 		}
 
-		static int ReferenceCreate(IntPtr L) {
+		__static int ReferenceCreate(LuaStateType L) {
 			return ToLuaState(L)->luabase->ReferenceCreate();
 		}
 
-		static void ReferenceFree(IntPtr L, int i) {
+		__static void ReferenceFree(LuaStateType L, int i) {
 			ToLuaState(L)->luabase->ReferenceFree(i);
 		}
 
-		static void ReferencePush(IntPtr L, int i) {
+		__static void ReferencePush(LuaStateType L, int i) {
 			ToLuaState(L)->luabase->ReferencePush(i);
 		}
 
-		static void PushSpecial(IntPtr L, GarrysMod::SPECIAL iType) {
+		__static void PushSpecial(LuaStateType L, GarrysMod::SPECIAL iType) {
 			ToLuaState(L)->luabase->PushSpecial((int)iType);
 		}
 
-		static bool IsType(IntPtr L, int iStackPos, int iType) {
+		__static bool IsType(LuaStateType L, int iStackPos, int iType) {
 			return ToLuaState(L)->luabase->IsType(iStackPos, iType);
 		}
 
-		static bool IsType(IntPtr L, int iStackPos, Lua::Type iType) {
+		__static bool IsType(LuaStateType L, int iStackPos, Lua::Type iType) {
 			return ToLuaState(L)->luabase->IsType(iStackPos, (int)iType);
 		}
 
-		static Lua::Type GetType(IntPtr L, int iStackPos) {
+		__static Lua::Type GetType(LuaStateType L, int iStackPos) {
 			return (Lua::Type)ToLuaState(L)->luabase->GetType(iStackPos);
 		}
 
-		static String ^GetTypeName(IntPtr L, Lua::Type iType) {
+		__static String ^GetTypeName(LuaStateType L, Lua::Type iType) {
 			return gcnew String(ToLuaState(L)->luabase->GetTypeName((int)iType));
 		}
 
-		static void CreateMetaTableType(IntPtr L, String ^strName, int iType) {
+		__static void CreateMetaTableType(LuaStateType L, String ^strName, int iType) {
 			const char* str = (const char*)(void*)Marshal::StringToHGlobalAnsi(strName);
 			ToLuaState(L)->luabase->CreateMetaTableType(str, iType);
 			Marshal::FreeHGlobal(IntPtr((void*)str));
 		}
 
-		static String ^CheckString(IntPtr L, int iStackPos) {
+		__static String ^CheckString(LuaStateType L, int iStackPos) {
 			return gcnew String(ToLuaState(L)->luabase->CheckString(iStackPos));
 		}
 
-		static double CheckNumber(IntPtr L, int iStackPos) {
+		__static double CheckNumber(LuaStateType L, int iStackPos) {
 			return ToLuaState(L)->luabase->CheckNumber(iStackPos);
 		}
 
 		static int EmptyGFunc(IntPtr L) {
 			return 0;
 		}
+
+#undef __static
+#define __static static
 	};
 }
+
+#endif
