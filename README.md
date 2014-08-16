@@ -3,6 +3,10 @@ GMOD-NET-API
 
 Garry's Mod Managed Application Programming Interface
 
+##### Notice
+* This repository is not maintained anymore, it is bugged and i might rewrite it some time later. Consider using this instead
+https://github.com/cartman300/gmsv_gsharp_win32
+
 ##### What is it?
 * It's a C++\CLI Wrapper over Garry's unmanaged GMod Binary Module headers
 
